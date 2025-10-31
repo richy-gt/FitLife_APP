@@ -23,6 +23,9 @@ import com.example.fitlifeapp.R
 import com.example.fitlifeapp.AvatarStorage // ✅ para persistencia
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import com.example.fitlifeapp.data.local.UserPreferences
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileScreen(
@@ -31,6 +34,7 @@ fun ProfileScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     // ✅ carga la imagen persistente o la última guardada
     var avatarUri by remember {
@@ -43,16 +47,28 @@ fun ProfileScreen(
     // 🔁 refresca automáticamente al volver desde la cámara
     LaunchedEffect(navController) {
         navController.currentBackStackEntryFlow.collect { backStackEntry ->
-            if (backStackEntry.destination.route == "profile") {
+            if (backStackEntry.destination.route == "profile" ||
+                backStackEntry.destination.route == "personalizacion"
+            ) {
                 avatarUri = AvatarStorage.getPersistent(context)
                     ?: AvatarPreferences.obtenerAvatarUri(context)
             }
         }
     }
 
-    // 🔄 carga los datos del usuario al iniciar
+    // 🔄 carga los datos del usuario al iniciar (para el ViewModel)
     LaunchedEffect(Unit) {
         viewModel.loadUser(1)
+    }
+
+    // 📨 Leer correo real desde DataStore
+    var userEmail by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(Unit) {
+        scope.launch {
+            val prefs = UserPreferences(context)
+            val user = prefs.getUser().first()
+            userEmail = user.first // el primer valor del Pair es el correo
+        }
     }
 
     Box(
@@ -133,34 +149,44 @@ fun ProfileScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // 🧩 Mostrar correo real desde DataStore
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                "Nombre",
+                                "Correo registrado",
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.primary
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(state.userName, style = MaterialTheme.typography.bodyLarge)
-                        }
-                    }
-
-                    Card(modifier = Modifier.fillMaxWidth()) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                "Email",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(state.userEmail, style = MaterialTheme.typography.bodyLarge)
+                            if (userEmail != null) {
+                                Text(userEmail!!, style = MaterialTheme.typography.bodyLarge)
+                            } else {
+                                Text("Cargando...", color = Color.Gray)
+                            }
                         }
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    // 🔄 Botón para refrescar datos
                     Button(onClick = { viewModel.loadUser(1) }) {
                         Text("Refrescar datos")
+                    }
+
+                    // 🚪 Botón para cerrar sesión
+                    Button(
+                        onClick = {
+                            scope.launch {
+                                val prefs = UserPreferences(context)
+                                prefs.saveLoginState(false) // marcar como deslogueado
+                                navController.navigate("login") {
+                                    popUpTo("personalizacion") { inclusive = true }
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    ) {
+                        Text("Cerrar sesión", color = Color.White)
                     }
                 }
             }
