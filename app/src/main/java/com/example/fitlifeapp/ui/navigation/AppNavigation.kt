@@ -10,6 +10,7 @@ import com.example.fitlifeapp.CameraAvatarScreen
 import com.example.fitlifeapp.ui.profile.ProfileScreen
 import com.example.fitlifeapp.ui.screens.LoginScreen
 import com.example.fitlifeapp.ui.screens.RegisterScreen
+import com.example.fitlifeapp.ui.screens.HomeScreen
 import com.example.fitlifeapp.data.local.UserPreferences
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.flow.first
@@ -21,7 +22,7 @@ fun AppNavigation(navController: NavHostController) {
         navController = navController,
         startDestination = "splash"
     ) {
-        // Pantalla inicial: decide a dónde ir
+        // Pantalla inicial
         composable("splash") {
             SplashDecider(navController)
         }
@@ -29,8 +30,9 @@ fun AppNavigation(navController: NavHostController) {
         // Pantallas principales
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }
+        composable("home") { HomeScreen(navController) }
 
-        // Perfil de usuario (pantalla principal tras login)
+        // Perfil de usuario (personalización)
         composable("personalizacion") { ProfileScreen(navController) }
 
         // Cámara / avatar
@@ -49,7 +51,7 @@ private fun SplashDecider(navController: NavHostController) {
                 val prefs = UserPreferences(context)
                 val logged = prefs.isLoggedIn().first()
                 if (logged) {
-                    navController.navigate("personalizacion") {
+                    navController.navigate("home") {
                         popUpTo("splash") { inclusive = true }
                     }
                 } else {

@@ -23,7 +23,9 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
 
     if (loggedIn) {
         LaunchedEffect(Unit) {
-            navController.navigate("personalizacion") { popUpTo("login") { inclusive = true } }
+            navController.navigate("home") {
+                popUpTo("login") { inclusive = true }
+            }
         }
     }
 
