@@ -5,10 +5,19 @@
     <!-- Permisos de red -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Permisos de cámara y galería -->
+    <!-- Permisos para cámara y almacenamiento -->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Indica que la app usa cámara, pero no es obligatoria -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <!-- Para Android 12 y anteriores -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <application
         android:allowBackup="true"
@@ -19,6 +28,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FitLifeApp">
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -26,10 +36,10 @@
             android:theme="@style/Theme.FitLifeApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <!-- FileProvider para fotos -->
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -40,6 +50,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
     </application>
 
 </manifest>
