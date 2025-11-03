@@ -1,3 +1,4 @@
+
 package com.example.fitlifeapp.ui.navigation
 
 import androidx.compose.runtime.Composable
@@ -13,6 +14,10 @@ import com.example.fitlifeapp.ui.screens.RegisterScreen
 import com.example.fitlifeapp.ui.screens.HomeScreen
 import com.example.fitlifeapp.data.local.UserPreferences
 import androidx.compose.ui.platform.LocalContext
+import com.example.fitlifeapp.ui.screens.EntrenadorScreen
+import com.example.fitlifeapp.ui.screens.PlanEntrenamientoScreen
+import com.example.fitlifeapp.ui.screens.PlanNutricionalScreen
+import com.example.fitlifeapp.ui.screens.ProgresoScreen
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -31,6 +36,10 @@ fun AppNavigation(navController: NavHostController) {
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }
         composable("home") { HomeScreen(navController) }
+        composable("entrenador") { EntrenadorScreen(navController) }
+        composable("plan_entrenamiento") { PlanEntrenamientoScreen(navController) }
+        composable("plan_nutricional") { PlanNutricionalScreen(navController) }
+        composable("progreso") { ProgresoScreen(navController) }
 
         // Perfil de usuario (personalización)
         composable("personalizacion") { ProfileScreen(navController) }

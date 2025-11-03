@@ -1,3 +1,4 @@
+
 package com.example.fitlifeapp.ui.screens
 
 import androidx.compose.foundation.background
@@ -50,7 +51,7 @@ fun HomeScreen(navController: NavHostController) {
                 .padding(padding)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp) // Adjusted spacing
         ) {
             Text(
                 text = "Bienvenido a FitLife 💪",
@@ -71,7 +72,7 @@ fun HomeScreen(navController: NavHostController) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // 🔹 Botón para ir al perfil de usuario
             Button(
@@ -85,22 +86,37 @@ fun HomeScreen(navController: NavHostController) {
                 Text("Ir a perfil 👤")
             }
 
-            // 🔹 Ejemplo de botones para futuras secciones
+            // 🔹 Nuevas secciones
             Button(
-                onClick = { /* TODO: Rutinas */ },
+                onClick = { navController.navigate("entrenador") },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Rutinas 🏃‍♂️")
+                Text("Entrenador")
             }
 
             Button(
-                onClick = { /* TODO: Nutrición */ },
+                onClick = { navController.navigate("plan_entrenamiento") },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Nutrición 🍎")
+                Text("Plan de Entrenamiento")
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Button(
+                onClick = { navController.navigate("plan_nutricional") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Plan Nutricional")
+            }
+
+            Button(
+                onClick = { navController.navigate("progreso") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Progreso")
+            }
+
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             // 🔹 Botón para cerrar sesión
             Button(
