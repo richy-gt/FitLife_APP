@@ -14,29 +14,65 @@ object RetrofitClient {
     private const val BASE_URL = "https://dummyjson.com/"
 
 
+    private const val CONNECT_TIMEOUT = 15L // segundos
+    private const val READ_TIMEOUT = 20L    // segundos
+    private const val WRITE_TIMEOUT = 20L   // segundos
+
     fun create(context: Context): Retrofit {
 
-        // 1️⃣ SessionManager para manejar el token
+
         val sessionManager = SessionManager(context)
 
-        // 2️⃣ AuthInterceptor para inyectar el token automáticamente
+
         val authInterceptor = AuthInterceptor(sessionManager)
 
-        // 3️⃣ HttpLoggingInterceptor para debugging
+
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY  // ⚠️ Cambiar a NONE en producción
+
+            level = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.BASIC
+            }
         }
 
-        // 4️⃣ OkHttpClient con AMBOS interceptores
+
         val okHttpClient = OkHttpClient.Builder()
-            // ⚠️ ORDEN IMPORTANTE: AuthInterceptor primero, luego Logging
-            .addInterceptor(authInterceptor)    // Añade el token
-            .addInterceptor(loggingInterceptor)  // Muestra en Logcat (con token)
-            .connectTimeout(15, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
+
+            .addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor)
+
+
+            .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+
+
+            .retryOnConnectionFailure(true)
+
             .build()
 
-        // 5️⃣ Retrofit con el cliente configurado
+
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+    }
+
+
+    fun createPublic(): Retrofit {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
+            .build()
+
         return Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())

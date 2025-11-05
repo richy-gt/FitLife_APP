@@ -3,68 +3,140 @@ package com.example.fitlifeapp.ui.profile
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.fitlifeapp.repository.UserRepository
+import com.example.fitlifeapp.data.local.SessionManager
+import com.example.fitlifeapp.data.remote.ApiService
+import com.example.fitlifeapp.data.remote.RetrofitClient
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
+import java.io.IOException
 
-/**
- * Estado de la UI
- */
+
 data class ProfileUiState(
     val isLoading: Boolean = false,
     val userName: String = "",
     val userEmail: String = "",
+    val userImage: String? = null,
     val error: String? = null
 )
 
-/**
- * ViewModel: Maneja la lógica de UI y el estado
- * Usa AndroidViewModel para tener acceso al Application Context
- */
+
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository = UserRepository(application)
+    private val apiService: ApiService = RetrofitClient
+        .create(application)
+        .create(ApiService::class.java)
 
-    // Estado PRIVADO (solo el ViewModel lo modifica)
+    private val sessionManager = SessionManager(application)
+
+
     private val _uiState = MutableStateFlow(ProfileUiState())
 
-    // Estado PÚBLICO (la UI lo observa)
+
     val uiState: StateFlow<ProfileUiState> = _uiState
 
-    /**
-     * Carga los datos del usuario desde la API
-     */
-    fun loadUser(id: Int = 1) {
-        // Indicar que está cargando
+
+    fun loadCurrentUser() {
+
         _uiState.value = _uiState.value.copy(
             isLoading = true,
             error = null
         )
 
-        // Ejecutar en coroutine (no bloquea la UI)
         viewModelScope.launch {
-            val result = repository.fetchUser(id)
+            try {
 
-            // Actualizar el estado según el resultado
-            _uiState.value = result.fold(
-                onSuccess = { user ->
-                    // ✅ Éxito: mostrar datos
-                    _uiState.value.copy(
+                val token = sessionManager.getAuthToken()
+                if (token.isNullOrEmpty()) {
+                    _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        userName = user.username,
-                        userEmail = user.email ?: "Sin email",
-                        error = null
+                        error = "No hay sesión activa. Por favor inicia sesión"
                     )
-                },
-                onFailure = { exception ->
-                    // ❌ Error: mostrar mensaje
-                    _uiState.value.copy(
-                        isLoading = false,
-                        error = exception.localizedMessage ?: "Error desconocido"
-                    )
+                    return@launch
                 }
-            )
+
+
+                val user = apiService.getCurrentUser()
+
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    userName = "${user.firstName} ${user.lastName}",
+                    userEmail = user.email,
+                    userImage = user.image,
+                    error = null
+                )
+
+            } catch (e: HttpException) {
+
+                val errorMsg = when (e.code()) {
+                    401 -> "Sesión expirada. Inicia sesión nuevamente"
+                    403 -> "No tienes permisos para ver este perfil"
+                    404 -> "Usuario no encontrado"
+                    500 -> "Error en el servidor"
+                    else -> "Error HTTP: ${e.code()}"
+                }
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = errorMsg
+                )
+
+            } catch (e: IOException) {
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Sin conexión a Internet. Verifica tu red"
+                )
+
+            } catch (e: Exception) {
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Error: ${e.localizedMessage ?: "Desconocido"}"
+                )
+            }
+        }
+    }
+
+
+    fun loadUser(id: Int) {
+        _uiState.value = _uiState.value.copy(
+            isLoading = true,
+            error = null
+        )
+
+        viewModelScope.launch {
+            try {
+                val user = apiService.getUserById(id)
+
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    userName = "${user.firstName} ${user.lastName}",
+                    userEmail = user.email,
+                    userImage = user.image,
+                    error = null
+                )
+
+            } catch (e: HttpException) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Error HTTP: ${e.code()}"
+                )
+
+            } catch (e: IOException) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Sin conexión a Internet"
+                )
+
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = e.localizedMessage ?: "Error desconocido"
+                )
+            }
         }
     }
 }
