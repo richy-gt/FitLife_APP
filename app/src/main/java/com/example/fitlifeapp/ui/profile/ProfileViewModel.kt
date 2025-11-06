@@ -12,15 +12,12 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-
 data class ProfileUiState(
     val isLoading: Boolean = false,
     val userName: String = "",
     val userEmail: String = "",
-    val userImage: String? = null,
     val error: String? = null
 )
-
 
 class ProfileViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -30,106 +27,87 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
     private val sessionManager = SessionManager(application)
 
-
     private val _uiState = MutableStateFlow(ProfileUiState())
-
-
     val uiState: StateFlow<ProfileUiState> = _uiState
 
-
+    /**
+     * 🔐 Cargar perfil del usuario autenticado (usa token JWT)
+     */
     fun loadCurrentUser() {
-
-        _uiState.value = _uiState.value.copy(
-            isLoading = true,
-            error = null
-        )
+        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
         viewModelScope.launch {
             try {
-
                 val token = sessionManager.getAuthToken()
                 if (token.isNullOrEmpty()) {
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        error = "No hay sesión activa. Por favor inicia sesión"
+                        error = "No hay sesión activa. Por favor inicia sesión."
                     )
                     return@launch
                 }
 
+                val response = apiService.getProfile("Bearer $token")
 
-                val user = apiService.getCurrentUser()
-
-
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    userName = "${user.firstName} ${user.lastName}",
-                    userEmail = user.email,
-                    userImage = user.image,
-                    error = null
-                )
-
-            } catch (e: HttpException) {
-
-                val errorMsg = when (e.code()) {
-                    401 -> "Sesión expirada. Inicia sesión nuevamente"
-                    403 -> "No tienes permisos para ver este perfil"
-                    404 -> "Usuario no encontrado"
-                    500 -> "Error en el servidor"
-                    else -> "Error HTTP: ${e.code()}"
+                if (response.isSuccessful && response.body() != null) {
+                    val user = response.body()!!
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        userName = user.name ?: "Usuario",
+                        userEmail = user.email ?: "Sin correo",
+                        error = null
+                    )
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = "Error: ${response.code()} - ${response.message()}"
+                    )
                 }
 
+            } catch (e: HttpException) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = errorMsg
+                    error = "Error HTTP: ${e.code()} - ${e.message()}"
                 )
-
             } catch (e: IOException) {
-
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Sin conexión a Internet. Verifica tu red"
+                    error = "Sin conexión a Internet."
                 )
-
             } catch (e: Exception) {
-
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    error = "Error: ${e.localizedMessage ?: "Desconocido"}"
+                    error = e.localizedMessage ?: "Error desconocido."
                 )
             }
         }
     }
 
-
-    fun loadUser(id: Int) {
-        _uiState.value = _uiState.value.copy(
-            isLoading = true,
-            error = null
-        )
+    /**
+     * 👤 Cargar un usuario específico (por ID)
+     */
+    fun loadUser(id: String) {
+        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
         viewModelScope.launch {
             try {
-                val user = apiService.getUserById(id)
+                val token = sessionManager.getAuthToken()
+                val response = apiService.getUserById(id, "Bearer $token")
 
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    userName = "${user.firstName} ${user.lastName}",
-                    userEmail = user.email,
-                    userImage = user.image,
-                    error = null
-                )
-
-            } catch (e: HttpException) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Error HTTP: ${e.code()}"
-                )
-
-            } catch (e: IOException) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Sin conexión a Internet"
-                )
+                if (response.isSuccessful && response.body() != null) {
+                    val user = response.body()!!
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        userName = user.name ?: "Usuario",
+                        userEmail = user.email ?: "Sin correo",
+                        error = null
+                    )
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = "Error al obtener usuario: ${response.message()}"
+                    )
+                }
 
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(

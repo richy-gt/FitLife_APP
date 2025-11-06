@@ -21,6 +21,7 @@ data class LoginUiState(
 )
 
 class LoginViewModel(app: Application) : AndroidViewModel(app) {
+
     private val apiService: ApiService = RetrofitClient
         .create(app)
         .create(ApiService::class.java)
@@ -31,21 +32,18 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState
 
-
     private val _status = MutableStateFlow<String?>(null)
     val status: StateFlow<String?> = _status
 
-    fun login(username: String, password: String) {
+    fun login(email: String, password: String) {
         viewModelScope.launch {
-
-            if (username.isBlank() || password.isBlank()) {
+            if (email.isBlank() || password.isBlank()) {
                 _uiState.value = _uiState.value.copy(
                     errorMessage = "Por favor completa todos los campos"
                 )
                 _status.value = "Completa los campos"
                 return@launch
             }
-
 
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
@@ -54,32 +52,36 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
             )
 
             try {
+                // 🧩 Construye la solicitud de login
+                val request = LoginRequest(email = email, password = password)
 
-                val request = LoginRequest(
-                    username = username,
-                    password = password,
-                    expiresInMins = 30
-                )
-
+                // 📡 Llamada al backend
                 val response = apiService.login(request)
 
+                if (response.isSuccessful && response.body() != null) {
+                    val body = response.body()!!
 
-                sessionManager.saveAuthToken(response.accessToken)
+                    // 🔐 Guarda el token y los datos del usuario
+                    sessionManager.saveToken(body.token ?: "")
+                    userPreferences.saveUserEmail(body.user?.email ?: email)
+                    userPreferences.saveUserPassword(password)
+                    userPreferences.saveLoginState(true)
 
-
-                userPreferences.saveUser(response.email, password)
-                userPreferences.saveLoginState(true)
-
-
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    isSuccess = true,
-                    errorMessage = null
-                )
-                _status.value = "ok"
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        isSuccess = true,
+                        errorMessage = null
+                    )
+                    _status.value = "ok"
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = "Credenciales incorrectas o error del servidor"
+                    )
+                    _status.value = "Error de autenticación"
+                }
 
             } catch (e: HttpException) {
-
                 val errorMsg = when (e.code()) {
                     401 -> "Usuario o contraseña incorrectos"
                     404 -> "Servicio no encontrado"
@@ -94,7 +96,6 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
                 _status.value = errorMsg
 
             } catch (e: IOException) {
-
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = "Sin conexión a Internet. Verifica tu red"
@@ -102,7 +103,6 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
                 _status.value = "Sin conexión a Internet"
 
             } catch (e: Exception) {
-
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = "Error inesperado: ${e.localizedMessage}"

@@ -1,28 +1,63 @@
 package com.example.fitlifeapp.repository
+
 import android.content.Context
+import com.example.fitlifeapp.data.local.SessionManager
 import com.example.fitlifeapp.data.remote.ApiService
 import com.example.fitlifeapp.data.remote.RetrofitClient
 import com.example.fitlifeapp.data.remote.dto.UserDto
-
+import kotlinx.coroutines.runBlocking
 
 class UserRepository(context: Context) {
 
-    // Crear la instancia del API Service (pasando el contexto)
     private val apiService: ApiService = RetrofitClient
         .create(context)
         .create(ApiService::class.java)
 
-    /**
-     * Obtiene un usuario de la API
-     *
-     * Usa Result<T> para manejar éxito/error de forma elegante
-     */
-    suspend fun fetchUser(id: Int = 1): Result<UserDto> {
-        return try {
-            // CAMBIA ESTA LÍNEA
-            val user = apiService.getUserById(id) // ¡Usa la función correcta!
+    private val sessionManager = SessionManager(context)
 
-            Result.success(user)
+    /**
+     * 👤 Obtiene un usuario por su ID
+     */
+    suspend fun fetchUser(id: String): Result<UserDto> {
+        return try {
+            val token = runBlocking { sessionManager.getAuthToken() }
+
+            if (token.isNullOrEmpty()) {
+                return Result.failure(Exception("No se encontró token. Inicia sesión."))
+            }
+
+            val response = apiService.getUserById(id, "Bearer $token")
+
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Error del servidor: ${response.code()}"))
+            }
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * 📋 Obtiene todos los usuarios (si tu backend lo soporta)
+     */
+    suspend fun fetchAllUsers(): Result<List<UserDto>> {
+        return try {
+            val token = runBlocking { sessionManager.getAuthToken() }
+
+            if (token.isNullOrEmpty()) {
+                return Result.failure(Exception("No se encontró token. Inicia sesión."))
+            }
+
+            val response = apiService.getAllUsers("Bearer $token")
+
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!.users)
+            } else {
+                Result.failure(Exception("Error del servidor: ${response.code()}"))
+            }
+
         } catch (e: Exception) {
             Result.failure(e)
         }

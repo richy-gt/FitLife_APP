@@ -1,58 +1,65 @@
 package com.example.fitlifeapp.data.local
 
-
-
 import android.content.Context
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-private val Context.userDataStore by preferencesDataStore(name = "user_prefs")
+// DataStore de sesión
+private val Context.dataStore by preferencesDataStore("user_prefs")
 
 class UserPreferences(private val context: Context) {
 
     companion object {
-        private val KEY_EMAIL = stringPreferencesKey("email")
-        private val KEY_PASSWORD = stringPreferencesKey("password")
-        private val KEY_IS_LOGGED_IN = booleanPreferencesKey("is_logged_in")
+        private val EMAIL_KEY = stringPreferencesKey("user_email")
+        private val PASSWORD_KEY = stringPreferencesKey("user_password")
+        private val IS_LOGGED_IN_KEY = booleanPreferencesKey("is_logged_in")
     }
 
-    suspend fun saveUser(email: String, password: String) {
-        context.userDataStore.edit { prefs ->
-            prefs[KEY_EMAIL] = email
-            prefs[KEY_PASSWORD] = password
+    // ✅ Guardar email
+    suspend fun saveUserEmail(email: String) {
+        context.dataStore.edit { prefs ->
+            prefs[EMAIL_KEY] = email
         }
     }
 
+    // ✅ Guardar contraseña (opcional)
+    suspend fun saveUserPassword(password: String) {
+        context.dataStore.edit { prefs ->
+            prefs[PASSWORD_KEY] = password
+        }
+    }
+
+    // ✅ Guardar estado de login
     suspend fun saveLoginState(isLoggedIn: Boolean) {
-        context.userDataStore.edit { prefs ->
-            prefs[KEY_IS_LOGGED_IN] = isLoggedIn
+        context.dataStore.edit { prefs ->
+            prefs[IS_LOGGED_IN_KEY] = isLoggedIn
         }
     }
 
+    // ✅ Obtener usuario (correo y contraseña)
     fun getUser(): Flow<Pair<String?, String?>> {
-        return context.userDataStore.data.map { prefs ->
-            Pair(prefs[KEY_EMAIL], prefs[KEY_PASSWORD])
+        return context.dataStore.data.map { prefs ->
+            Pair(prefs[EMAIL_KEY], prefs[PASSWORD_KEY])
         }
     }
 
-    fun isLoggedIn(): Flow<Boolean> {
-        return context.userDataStore.data.map { prefs ->
-            prefs[KEY_IS_LOGGED_IN] ?: false
-        }
+    // ✅ Saber si está logueado
+    fun isLoggedIn(): Flow<Boolean> = context.dataStore.data.map {
+        it[IS_LOGGED_IN_KEY] ?: false
     }
 
+    // ✅ Cerrar sesión
     suspend fun logout() {
-        context.userDataStore.edit { prefs ->
-            prefs[KEY_IS_LOGGED_IN] = false
-        }
+        context.dataStore.edit { it.clear() }
     }
 
-    suspend fun clearAll() {
-        context.userDataStore.edit { prefs ->
-            prefs.clear()
-        }
+    // ✅ (opcional) Obtener el correo directamente
+    suspend fun getUserEmail(): String? {
+        return context.dataStore.data.map { it[EMAIL_KEY] }.first()
     }
-
 }

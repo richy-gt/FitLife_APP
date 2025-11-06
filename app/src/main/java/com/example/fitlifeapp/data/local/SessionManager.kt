@@ -1,46 +1,53 @@
-package com.example.fitlifeapp.data.local  // ⚠️ Cambia esto
+package com.example.fitlifeapp.data.local
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-/**
- * SessionManager: Guarda y recupera el token JWT de forma segura
- */
+private val Context.dataStore by preferencesDataStore("session_prefs")
+
 class SessionManager(private val context: Context) {
 
     companion object {
-        private val Context.dataStore by preferencesDataStore(name = "session_prefs")
-        private val KEY_AUTH_TOKEN = stringPreferencesKey("auth_token")
+        private val TOKEN_KEY = stringPreferencesKey("token")
+        private val EMAIL_KEY = stringPreferencesKey("email")
+        private val IS_LOGGED_IN_KEY = booleanPreferencesKey("is_logged_in")
     }
 
-    /**
-     * Guarda el token de autenticación
-     */
-    suspend fun saveAuthToken(token: String) {
-        context.dataStore.edit { preferences ->
-            preferences[KEY_AUTH_TOKEN] = token
+    // ✅ Guardar token JWT
+    suspend fun saveToken(token: String) {
+        context.dataStore.edit { prefs ->
+            prefs[TOKEN_KEY] = token
         }
     }
 
-    /**
-     * Recupera el token guardado (o null si no existe)
-     */
+    // ✅ Obtener token JWT
     suspend fun getAuthToken(): String? {
-        return context.dataStore.data
-            .map { preferences -> preferences[KEY_AUTH_TOKEN] }
-            .first()
+        return context.dataStore.data.map { it[TOKEN_KEY] }.first()
     }
 
-    /**
-     * Elimina el token (cerrar sesión)
-     */
-    suspend fun clearAuthToken() {
-        context.dataStore.edit { preferences ->
-            preferences.remove(KEY_AUTH_TOKEN)
+    // ✅ Guardar email del usuario
+    suspend fun saveUserEmail(email: String) {
+        context.dataStore.edit { prefs ->
+            prefs[EMAIL_KEY] = email
         }
+    }
+
+    // ✅ Guardar estado de sesión
+    suspend fun saveLoginState(isLoggedIn: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[IS_LOGGED_IN_KEY] = isLoggedIn
+        }
+    }
+
+    fun isLoggedIn(): Flow<Boolean> = context.dataStore.data.map { it[IS_LOGGED_IN_KEY] ?: false }
+
+    suspend fun logout() {
+        context.dataStore.edit { it.clear() }
     }
 }

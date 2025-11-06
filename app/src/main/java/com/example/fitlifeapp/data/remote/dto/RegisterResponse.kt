@@ -1,12 +1,12 @@
 package com.example.fitlifeapp.data.remote.dto
 
-data class LoginResponse(
+data class RegisterResponse(
     val message: String?,
-    val user: UserInfo?,
+    val user: RegisteredUser?,
     val token: String?
 )
 
-data class UserInfo(
+data class RegisteredUser(
     val id: String?,
     val name: String?,
     val email: String?

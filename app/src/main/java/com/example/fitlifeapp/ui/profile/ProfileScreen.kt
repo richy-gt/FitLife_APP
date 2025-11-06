@@ -13,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -35,12 +34,12 @@ fun ProfileScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
-
+    // 🧩 Imagen del avatar local guardada en el dispositivo
     var localAvatarUri by remember {
         mutableStateOf(AvatarStorage.getPersistent(context))
     }
 
-
+    // 🔁 Actualiza el avatar si el usuario cambia la foto en otra pantalla
     LaunchedEffect(navController) {
         navController.currentBackStackEntryFlow.collect { backStackEntry ->
             if (backStackEntry.destination.route == "personalizacion") {
@@ -49,7 +48,7 @@ fun ProfileScreen(
         }
     }
 
-
+    // 🧠 Cargar perfil del backend
     LaunchedEffect(Unit) {
         viewModel.loadCurrentUser()
     }
@@ -60,7 +59,7 @@ fun ProfileScreen(
             .padding(16.dp)
     ) {
         when {
-
+            // Estado de carga
             state.isLoading -> {
                 Column(
                     modifier = Modifier.align(Alignment.Center),
@@ -72,7 +71,7 @@ fun ProfileScreen(
                 }
             }
 
-
+            // Estado de error
             state.error != null -> {
                 Column(
                     modifier = Modifier.align(Alignment.Center),
@@ -100,7 +99,7 @@ fun ProfileScreen(
                 }
             }
 
-
+            // Estado normal: mostrar datos del usuario
             else -> {
                 Column(
                     modifier = Modifier
@@ -109,13 +108,14 @@ fun ProfileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-
+                    // Animación del avatar
                     val scale by animateFloatAsState(
-                        targetValue = if (localAvatarUri != null || state.userImage != null) 1.05f else 1f,
+                        targetValue = if (localAvatarUri != null) 1.05f else 1f,
                         animationSpec = tween(durationMillis = 600),
                         label = "avatarScale"
                     )
 
+                    // Imagen del usuario
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
@@ -136,8 +136,7 @@ fun ProfileScreen(
                     ) {
                         Image(
                             painter = rememberAsyncImagePainter(
-
-                                localAvatarUri ?: state.userImage ?: R.mipmap.ic_launcher_round
+                                localAvatarUri ?: R.mipmap.ic_launcher_round
                             ),
                             contentDescription = "Avatar del usuario",
                             contentScale = ContentScale.Crop,
@@ -158,7 +157,7 @@ fun ProfileScreen(
                         style = MaterialTheme.typography.headlineMedium
                     )
 
-
+                    // Card nombre
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -174,7 +173,7 @@ fun ProfileScreen(
                         }
                     }
 
-
+                    // Card correo
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
@@ -192,7 +191,6 @@ fun ProfileScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-
                     OutlinedButton(
                         onClick = { viewModel.loadCurrentUser() },
                         modifier = Modifier.fillMaxWidth()
@@ -200,7 +198,7 @@ fun ProfileScreen(
                         Text("🔄 Refrescar datos")
                     }
 
-
+                    // Botón cerrar sesión
                     Button(
                         onClick = {
                             scope.launch {
@@ -219,7 +217,7 @@ fun ProfileScreen(
                         Text("🚪 Cerrar sesión")
                     }
 
-
+                    // Volver al home
                     TextButton(
                         onClick = { navController.navigate("home") },
                         modifier = Modifier.fillMaxWidth()
