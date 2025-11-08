@@ -16,17 +16,17 @@ import com.example.fitlifeapp.viewmodel.RegisterViewModel
 // FUNCIONES DE VALIDACIÓN
 // ----------------------------
 fun isValidEmail(email: String): Boolean {
-    // Verifica formato de correo (ej: algo@gmail.com)
+
     return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
 
 fun isValidName(name: String): Boolean {
-    // Solo letras y espacios (mínimo 3)
+
     return name.matches(Regex("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]{3,}$"))
 }
 
 fun isValidPassword(password: String): Boolean {
-    // Al menos 8 caracteres, una mayúscula, un número y un carácter especial
+
     return password.matches(Regex("^(?=.*[A-Z])(?=.*\\d)(?=.*[@#\$%^&+=!]).{8,}\$"))
 }
 
@@ -43,7 +43,7 @@ fun RegisterScreen(
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
 
-    // Errores visibles en tiempo real
+
     var emailError by remember { mutableStateOf<String?>(null) }
     var nameError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }

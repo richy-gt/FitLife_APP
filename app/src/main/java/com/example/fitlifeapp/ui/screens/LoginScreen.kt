@@ -15,7 +15,7 @@ import com.example.fitlifeapp.data.local.UserPreferences
 import com.example.fitlifeapp.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
-// ✅ Validar correo (solo para login)
+
 fun validateEmailLogin(email: String): Boolean {
     return Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }
@@ -34,17 +34,17 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
 
-    // 🔥 Cuando el login sea exitoso
+
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
             scope.launch {
-                // Guardamos usuario y estado de sesión persistente
+
                 userPrefs.saveUserEmail(username)
                 userPrefs.saveUserPassword(password)
                 userPrefs.saveLoginState(true)
             }
 
-            // Navegamos al home y limpiamos el backstack
+
             navController.navigate("home") {
                 popUpTo("login") { inclusive = true }
             }
@@ -173,27 +173,7 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // ----------------------------
-        // CREDENCIALES DE PRUEBA
-        // ----------------------------
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.secondaryContainer
-            ),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text(
-                    text = "💡 Credenciales de prueba:",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-                Text(
-                    text = "Usuario: emilys\nContraseña: emilyspass",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                )
-            }
-        }
+
+
     }
 }

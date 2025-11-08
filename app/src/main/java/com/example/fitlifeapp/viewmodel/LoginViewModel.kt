@@ -52,16 +52,16 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
             )
 
             try {
-                // 🧩 Construye la solicitud de login
+
                 val request = LoginRequest(email = email, password = password)
 
-                // 📡 Llamada al backend
+
                 val response = apiService.login(request)
 
                 if (response.isSuccessful && response.body() != null) {
                     val body = response.body()!!
 
-                    // 🔐 Guarda el token y los datos del usuario
+
                     sessionManager.saveToken(body.token ?: "")
                     sessionManager.saveUserEmail(body.user?.email ?: email)
                     userPreferences.saveUserPassword(password)

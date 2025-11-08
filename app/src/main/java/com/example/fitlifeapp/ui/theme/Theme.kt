@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// 💡 Paleta de colores modo claro
+
 private val LightColorScheme = lightColorScheme(
     primary = FitLifeGreen,
     onPrimary = FitLifeWhite,
@@ -24,7 +24,7 @@ private val LightColorScheme = lightColorScheme(
     onError = FitLifeWhite
 )
 
-// 💡 Paleta de colores modo oscuro
+
 private val DarkColorScheme = darkColorScheme(
     primary = FitLifeGreen,
     onPrimary = FitLifeWhite,
