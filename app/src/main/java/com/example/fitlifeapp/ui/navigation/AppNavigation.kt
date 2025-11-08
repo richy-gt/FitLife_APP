@@ -1,4 +1,3 @@
-
 package com.example.fitlifeapp.ui.navigation
 
 import androidx.compose.runtime.Composable
@@ -27,24 +26,22 @@ fun AppNavigation(navController: NavHostController) {
         navController = navController,
         startDestination = "splash"
     ) {
-
+        // Pantalla inicial que decide adónde ir
         composable("splash") {
             SplashDecider(navController)
         }
 
-
+        // Pantallas públicas
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }
+
+        // Pantallas privadas
         composable("home") { HomeScreen(navController) }
         composable("entrenador") { EntrenadorScreen(navController) }
         composable("plan_entrenamiento") { PlanEntrenamientoScreen(navController) }
         composable("plan_nutricional") { PlanNutricionalScreen(navController) }
         composable("progreso") { ProgresoScreen(navController) }
-
-
         composable("personalizacion") { ProfileScreen(navController) }
-
-
         composable("camera_avatar") { CameraAvatarScreen(navController) }
     }
 }
@@ -58,17 +55,24 @@ private fun SplashDecider(navController: NavHostController) {
         scope.launch {
             try {
                 val prefs = UserPreferences(context)
-                val logged = prefs.isLoggedIn().first()
-                if (logged) {
+
+                // ✅ Revisa si hay sesión activa y correo guardado
+                val loggedIn = prefs.isLoggedIn().first()
+                val userEmail = prefs.getUserEmail()
+
+                if (loggedIn && !userEmail.isNullOrEmpty()) {
+                    // Usuario logueado → ir al Home
                     navController.navigate("home") {
                         popUpTo("splash") { inclusive = true }
                     }
                 } else {
+                    // Usuario no logueado → ir al Login
                     navController.navigate("login") {
                         popUpTo("splash") { inclusive = true }
                     }
                 }
             } catch (e: Exception) {
+                // Si ocurre un error → enviar al login
                 navController.navigate("login") {
                     popUpTo("splash") { inclusive = true }
                 }
