@@ -11,8 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.example.fitlifeapp.data.local.UserPreferences
-import kotlinx.coroutines.flow.first
+import com.example.fitlifeapp.data.local.SessionManager
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -22,13 +21,15 @@ fun HomeScreen(navController: NavHostController) {
     val scope = rememberCoroutineScope()
     var userEmail by remember { mutableStateOf<String?>(null) }
 
-    // 🔹 Leer correo del usuario desde DataStore
-    LaunchedEffect(Unit) {
+    fun loadEmail() {
         scope.launch {
-            val prefs = UserPreferences(context)
-            val user = prefs.getUser().first()
-            userEmail = user.first
+            val sessionManager = SessionManager(context)
+            userEmail = sessionManager.getUserEmail()
         }
+    }
+
+    LaunchedEffect(Unit) {
+        loadEmail()
     }
 
     Scaffold(
@@ -51,7 +52,7 @@ fun HomeScreen(navController: NavHostController) {
                 .padding(padding)
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp) // Adjusted spacing
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 text = "Bienvenido a FitLife 💪",
@@ -74,7 +75,6 @@ fun HomeScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 🔹 Botón para ir al perfil de usuario
             Button(
                 onClick = { navController.navigate("personalizacion") },
                 colors = ButtonDefaults.buttonColors(
@@ -86,7 +86,6 @@ fun HomeScreen(navController: NavHostController) {
                 Text("Ir a perfil 👤")
             }
 
-            // 🔹 Nuevas secciones
             Button(
                 onClick = { navController.navigate("entrenador") },
                 modifier = Modifier.fillMaxWidth()
@@ -118,14 +117,16 @@ fun HomeScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // 🔹 Botón para cerrar sesión
             Button(
                 onClick = {
                     scope.launch {
-                        val prefs = UserPreferences(context)
-                        prefs.saveLoginState(false)
+                        val sessionManager = SessionManager(context)
+                        sessionManager.logout()
                         navController.navigate("login") {
-                            popUpTo("home") { inclusive = true }
+                            popUpTo(navController.graph.startDestinationId) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
                         }
                     }
                 },

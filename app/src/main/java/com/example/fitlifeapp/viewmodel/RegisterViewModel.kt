@@ -23,7 +23,7 @@ data class RegisterUiState(
 class RegisterViewModel(app: Application) : AndroidViewModel(app) {
 
     private val apiService: ApiService = RetrofitClient
-        .createPublic() // 👈 cliente sin token
+        .createPublic()
         .create(ApiService::class.java)
 
     private val sessionManager = SessionManager(app)
@@ -52,20 +52,20 @@ class RegisterViewModel(app: Application) : AndroidViewModel(app) {
             )
 
             try {
-                // 🧩 Construir la solicitud
+
                 val request = RegisterRequest(
                     email = email,
                     password = password,
                     name = name
                 )
 
-                // 📡 Llamada al backend
+
                 val response = apiService.register(request)
 
                 if (response.isSuccessful && response.body() != null) {
                     val registerData = response.body()!!
 
-                    // ✅ Guarda token y datos del usuario
+
                     sessionManager.saveToken(registerData.token ?: "")
                     val userEmail = registerData.user?.email ?: email
                     userPreferences.saveUserEmail(userEmail)

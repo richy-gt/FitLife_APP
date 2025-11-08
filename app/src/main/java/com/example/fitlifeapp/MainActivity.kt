@@ -18,11 +18,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 🔍 Verificamos que la URL base esté correcta
+
         val retrofit = RetrofitClient.createPublic()
         Log.d("FitLifeAPI", "🌐 Base URL actual: ${retrofit.baseUrl()}")
 
-        // 🔄 Probamos conexión rápida al backend (GET /)
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val client = retrofit.callFactory() as okhttp3.Call.Factory
@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // 🎨 Interfaz principal
+
         setContent {
             FitLifeAppTheme {
                 val navController = rememberNavController()

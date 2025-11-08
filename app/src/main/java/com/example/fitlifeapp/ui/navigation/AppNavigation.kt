@@ -27,12 +27,12 @@ fun AppNavigation(navController: NavHostController) {
         navController = navController,
         startDestination = "splash"
     ) {
-        // Pantalla inicial
+
         composable("splash") {
             SplashDecider(navController)
         }
 
-        // Pantallas principales
+
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }
         composable("home") { HomeScreen(navController) }
@@ -41,10 +41,10 @@ fun AppNavigation(navController: NavHostController) {
         composable("plan_nutricional") { PlanNutricionalScreen(navController) }
         composable("progreso") { ProgresoScreen(navController) }
 
-        // Perfil de usuario (personalización)
+
         composable("personalizacion") { ProfileScreen(navController) }
 
-        // Cámara / avatar
+
         composable("camera_avatar") { CameraAvatarScreen(navController) }
     }
 }

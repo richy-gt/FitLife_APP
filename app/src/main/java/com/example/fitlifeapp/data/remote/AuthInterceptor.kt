@@ -15,22 +15,22 @@ class AuthInterceptor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
-        // Recuperar el token (usando runBlocking porque intercept no es suspend)
+
         val token = runBlocking {
             sessionManager.getAuthToken()
         }
 
-        // Si no hay token, continuar con la petición original
+
         if (token.isNullOrEmpty()) {
             return chain.proceed(originalRequest)
         }
 
-        // Crear nueva petición CON el token
+
         val authenticatedRequest = originalRequest.newBuilder()
             .header("Authorization", "Bearer $token")
             .build()
 
-        // Continuar con la petición autenticada
+
         return chain.proceed(authenticatedRequest)
     }
 }

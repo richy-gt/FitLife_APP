@@ -15,9 +15,7 @@ class UserRepository(context: Context) {
 
     private val sessionManager = SessionManager(context)
 
-    /**
-     * 👤 Obtiene un usuario por su ID
-     */
+
     suspend fun fetchUser(id: String): Result<UserDto> {
         return try {
             val token = runBlocking { sessionManager.getAuthToken() }
@@ -39,9 +37,7 @@ class UserRepository(context: Context) {
         }
     }
 
-    /**
-     * 📋 Obtiene todos los usuarios (si tu backend lo soporta)
-     */
+
     suspend fun fetchAllUsers(): Result<List<UserDto>> {
         return try {
             val token = runBlocking { sessionManager.getAuthToken() }

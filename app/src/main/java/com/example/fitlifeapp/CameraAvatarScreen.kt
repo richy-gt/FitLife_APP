@@ -43,7 +43,7 @@ fun CameraAvatarScreen(navController: NavController) {
     ) { ok ->
         if (ok) {
             imageUri?.let {
-                // Guarda en almacenamiento interno persistente
+
                 val persistente = AvatarStorage.persistFromUri(context, it)
                 AvatarPreferences.guardarAvatarUri(context, persistente)
 

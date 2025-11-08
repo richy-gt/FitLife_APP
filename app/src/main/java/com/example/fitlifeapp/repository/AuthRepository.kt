@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.first
 class AuthRepository(context: Context) {
     private val prefs = UserPreferences(context)
 
-    // ✅ Registro simulado local (puedes conectar a backend luego)
+
     suspend fun register(email: String, password: String): Boolean {
         prefs.saveUserEmail(email)
         prefs.saveUserPassword(password)
@@ -15,7 +15,7 @@ class AuthRepository(context: Context) {
         return true
     }
 
-    // ✅ Inicio de sesión local (compara con datos guardados)
+
     suspend fun login(email: String, password: String): Boolean {
         val (savedEmail, savedPassword) = prefs.getUser().first()
         return if (email == savedEmail && password == savedPassword) {
@@ -27,9 +27,9 @@ class AuthRepository(context: Context) {
         }
     }
 
-    // ✅ Cierre de sesión
+
     suspend fun logout() = prefs.logout()
 
-    // ✅ Verificar estado de sesión
+
     fun isLoggedIn() = prefs.isLoggedIn()
 }

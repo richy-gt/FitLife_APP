@@ -30,13 +30,34 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState
 
-    /**
-     * 🔐 Cargar perfil del usuario autenticado (usa token JWT)
-     */
-    fun loadCurrentUser() {
-        _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+    init {
+        // Load initial data and then fetch from network
+        loadInitialDataFromSession()
+    }
 
+    private fun loadInitialDataFromSession() {
         viewModelScope.launch {
+            val userEmail = sessionManager.getUserEmail()
+            if (userEmail != null) {
+                _uiState.value = _uiState.value.copy(
+                    userEmail = userEmail,
+                    userName = userEmail.substringBefore('@')
+                )
+            }
+            // After loading initial data, fetch the full profile
+            loadCurrentUser()
+        }
+    }
+
+
+    fun loadCurrentUser() {
+        viewModelScope.launch {
+            // Don't show loading indicator if we already have some data
+            if (_uiState.value.userName.isEmpty()) {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+            }
+            _uiState.value = _uiState.value.copy(error = null)
+
             try {
                 val token = sessionManager.getAuthToken()
                 if (token.isNullOrEmpty()) {
@@ -53,39 +74,50 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                     val user = response.body()!!
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        userName = user.name ?: "Usuario",
-                        userEmail = user.email ?: "Sin correo",
-                        error = null
+                        userName = user.name ?: _uiState.value.userName,
+                        userEmail = user.email ?: _uiState.value.userEmail
                     )
                 } else {
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = "Error: ${response.code()} - ${response.message()}"
-                    )
+                    // Don't show an error if we at least have session data
+                    if (_uiState.value.userName.isEmpty()) {
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = "Error: ${response.code()} - ${response.message()}"
+                        )
+                    }
                 }
 
             } catch (e: HttpException) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Error HTTP: ${e.code()} - ${e.message()}"
-                )
+                if (_uiState.value.userName.isEmpty()) {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = "Error HTTP: ${e.code()} - ${e.message()}"
+                    )
+                }
             } catch (e: IOException) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Sin conexión a Internet."
-                )
+                if (_uiState.value.userName.isEmpty()) {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = "Sin conexión a Internet."
+                    )
+                }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = e.localizedMessage ?: "Error desconocido."
-                )
+                if (_uiState.value.userName.isEmpty()) {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = e.localizedMessage ?: "Error desconocido."
+                    )
+                }
+            } finally {
+                // Always ensure loading is turned off
+                if (_uiState.value.isLoading) {
+                    _uiState.value = _uiState.value.copy(isLoading = false)
+                }
             }
         }
     }
 
-    /**
-     * 👤 Cargar un usuario específico (por ID)
-     */
+
     fun loadUser(id: String) {
         _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
@@ -98,8 +130,8 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                     val user = response.body()!!
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
-                        userName = user.name ?: "Usuario",
-                        userEmail = user.email ?: "Sin correo",
+                        userName = user.name ?: "",
+                        userEmail = user.email ?: "",
                         error = null
                     )
                 } else {

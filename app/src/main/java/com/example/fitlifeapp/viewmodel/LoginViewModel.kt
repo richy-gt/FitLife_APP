@@ -63,9 +63,9 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
 
                     // 🔐 Guarda el token y los datos del usuario
                     sessionManager.saveToken(body.token ?: "")
-                    userPreferences.saveUserEmail(body.user?.email ?: email)
+                    sessionManager.saveUserEmail(body.user?.email ?: email)
                     userPreferences.saveUserPassword(password)
-                    userPreferences.saveLoginState(true)
+                    sessionManager.saveLoginState(true)
 
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
@@ -112,5 +112,5 @@ class LoginViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun isLoggedIn() = userPreferences.isLoggedIn()
+    fun isLoggedIn() = sessionManager.isLoggedIn()
 }

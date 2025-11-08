@@ -10,14 +10,14 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    // ✅ URL base: el emulador Android usa 10.0.2.2 para acceder al localhost del PC
+
     private const val BASE_URL = "http://10.0.2.2:8080/api/"
 
     private const val CONNECT_TIMEOUT = 15L
     private const val READ_TIMEOUT = 20L
     private const val WRITE_TIMEOUT = 20L
 
-    /** 🔐 Retrofit con autenticación */
+
     fun create(context: Context): Retrofit {
         val sessionManager = SessionManager(context)
         val authInterceptor = AuthInterceptor(sessionManager)
@@ -42,7 +42,7 @@ object RetrofitClient {
             .build()
     }
 
-    /** 🚪 Retrofit sin autenticación (para login o registro) */
+
     fun createPublic(): Retrofit {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY

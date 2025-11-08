@@ -19,26 +19,31 @@ class SessionManager(private val context: Context) {
         private val IS_LOGGED_IN_KEY = booleanPreferencesKey("is_logged_in")
     }
 
-    // ✅ Guardar token JWT
+
     suspend fun saveToken(token: String) {
         context.dataStore.edit { prefs ->
             prefs[TOKEN_KEY] = token
         }
     }
 
-    // ✅ Obtener token JWT
+
     suspend fun getAuthToken(): String? {
         return context.dataStore.data.map { it[TOKEN_KEY] }.first()
     }
 
-    // ✅ Guardar email del usuario
+
     suspend fun saveUserEmail(email: String) {
         context.dataStore.edit { prefs ->
             prefs[EMAIL_KEY] = email
         }
     }
 
-    // ✅ Guardar estado de sesión
+
+    suspend fun getUserEmail(): String? {
+        return context.dataStore.data.map { it[EMAIL_KEY] }.first()
+    }
+
+
     suspend fun saveLoginState(isLoggedIn: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[IS_LOGGED_IN_KEY] = isLoggedIn
