@@ -193,6 +193,7 @@ fun ProfileScreen(
                             scope.launch {
                                 val sessionManager = SessionManager(context)
                                 sessionManager.logout()
+                                AvatarStorage.clear(context)
                                 navController.navigate("login") {
                                     popUpTo(navController.graph.startDestinationId) {
                                         inclusive = true

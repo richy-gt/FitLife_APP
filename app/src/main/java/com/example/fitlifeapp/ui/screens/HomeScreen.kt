@@ -1,4 +1,3 @@
-
 package com.example.fitlifeapp.ui.screens
 
 import androidx.compose.foundation.background
@@ -11,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.fitlifeapp.AvatarStorage
 import com.example.fitlifeapp.data.local.SessionManager
 import kotlinx.coroutines.launch
 
@@ -122,6 +122,7 @@ fun HomeScreen(navController: NavHostController) {
                     scope.launch {
                         val sessionManager = SessionManager(context)
                         sessionManager.logout()
+                        AvatarStorage.clear(context) // ✨ Borra la imagen
                         navController.navigate("login") {
                             popUpTo(navController.graph.startDestinationId) {
                                 inclusive = true
