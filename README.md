@@ -1,130 +1,221 @@
-# FitLifeApp
+FitLife App
+Aplicación móvil Android de gestión de entrenamiento y bienestar personal desarrollada con Kotlin y Jetpack Compose.
+Tabla de Contenidos
 
-## 1. Caso Elegido y Alcance
+Descripción
+Requisitos Previos
+Instalación
+Configuración del Backend
+Compilación y Ejecución
+Arquitectura
+Funcionalidades
+API Endpoints
+Tecnologías Utilizadas
 
-**Caso elegido:** FitLife — aplicación móvil de gestión de entrenamiento y bienestar personal.
+Descripción
+FitLife es una aplicación móvil que permite a los usuarios gestionar su entrenamiento físico y bienestar personal. Incluye funcionalidades de registro, autenticación, gestión de perfil, planes de entrenamiento, nutrición y seguimiento de progreso.
+Requisitos Previos
 
-**Alcance EP4:** Se amplía la app con nuevas secciones: Entrenador, Plan de Entrenamiento, Plan Nutricional y Progreso. Cada módulo incorpora navegación propia, persistencia de datos, componentes reutilizables y control de estado con ViewModel.
+Android Studio Hedgehog o superior
+JDK 11 o superior
+Android SDK API 24 o superior
+Emulador Android o dispositivo físico
+Node.js 16+ (para el backend)
+MongoDB Atlas o instancia local
 
-## 2. Requisitos y Ejecución
+Instalación
+Backend
 
-**Stack Tecnológico:**
-- Kotlin
-- Jetpack Compose
-- Navigation Compose
-- Retrofit/OkHttp
-- Gson
-- DataStore
-- Coil
-- Coroutines
+Navegar al directorio del backend:
 
-**Instalación:**
-```bash
-./gradlew clean assembleDebug
-# o en Windows
-gradlew.bat clean assembleDebug
+bashcd backend
+
+Instalar dependencias:
+
+bashnpm install
+
+Configurar variables de entorno en archivo .env:
+
+envPORT=8080
+MONGO_URI=tu_string_conexion_mongodb
+JWT_SECRET=tu_secreto_jwt
+
+Iniciar el servidor:
+
+bashnpm run dev
+El servidor estará disponible en http://localhost:8080
+Aplicación Android
+
+Abrir el proyecto en Android Studio
+Sincronizar dependencias Gradle:
+
+bash./gradlew build
+
+Compilar la aplicación:
+
+bash./gradlew clean assembleDebug
+Configuración del Backend
+La aplicación se conecta al backend mediante RetrofitClient.kt. La URL base está configurada para usar el emulador Android:
+kotlinprivate const val BASE_URL = "http://10.0.2.2:8080/api/"
+Para dispositivo físico, cambiar a la IP local de tu máquina:
+kotlinprivate const val BASE_URL = "http://192.168.x.x:8080/api/"
+Compilación y Ejecución
+Modo Debug
+bash./gradlew installDebug
+O desde Android Studio: Run > Run 'app'
+Modo Release
+bash./gradlew assembleRelease
 ```
 
-**Ejecución:**
-```bash
-./gradlew installDebug
-```
+Nota: Requiere configuración de firma en `build.gradle.kts`
 
-**Perfiles:**
-- `debug` (por defecto)
-- `release` (requiere firma)
+## Arquitectura
 
-## 3. Arquitectura y Flujo
-
-**Estructura de Carpetas:**
+### Estructura del Proyecto
 ```
 app/
-├─ data/
-│  ├─ local/        → DataStore: preferencias de usuario, sesión, avatar, progreso
-│  └─ remote/       → RetrofitClient y ApiService
-├─ repository/      → AuthRepository, UserRepository, EntrenamientoRepository, NutricionRepository, ProgresoRepository
-├─ ui/
-│  ├─ screens/      
-│  │  ├─ login/               → pantalla de inicio de sesión
-│  │  ├─ register/            → pantalla de registro
-│  │  ├─ home/                → pantalla principal y menú general
-│  │  ├─ profile/             → perfil de usuario y edición de datos
-│  │  ├─ entrenador/          → listado y detalle de entrenadores
-│  │  ├─ planEntrenamiento/   → rutinas, ejercicios y calendarización
-│  │  ├─ planNutricional/     → menú diario y seguimiento alimenticio
-│  │  └─ progreso/            → métricas, estadísticas y avances
-│  ├─ navigation/   → AppNavigation.kt (rutas y NavHost)
-│  ├─ components/   → diálogos, inputs, botones, tarjetas reutilizables
-│  └─ theme/        → colores, tipografía y estilos Material3
-├─ viewmodel/       → Lógica de estado (StateFlow) para cada módulo
-├─ AvatarStorage.kt → Guardado local de imagen de perfil
-└─ MainActivity.kt  → Punto de entrada y configuración de tema/nav
+├── data/
+│   ├── local/              # DataStore para sesión y preferencias
+│   ├── remote/             # Retrofit y servicios API
+│   └── model/              # Modelos de datos
+├── repository/             # Repositorios de datos
+├── ui/
+│   ├── screens/            # Pantallas principales
+│   ├── navigation/         # Navegación de la app
+│   ├── components/         # Componentes reutilizables
+│   ├── theme/              # Tema y estilos Material3
+│   └── profile/            # Perfil de usuario
+├── viewmodel/              # ViewModels con StateFlow
+└── MainActivity.kt         # Actividad principal
 ```
 
-**Gestión de Estado:**
-- ViewModel + MutableStateFlow (loading, success, error)
-- Los repositorios centralizan la lógica y la persistencia con DataStore
+### Patrón de Arquitectura
 
-**Navegación:**
-- NavHost con rutas: login, register, home, profile, entrenador, planEntrenamiento, planNutricional, progreso
-- El backstack es controlado con NavController
+- MVVM (Model-View-ViewModel)
+- Repository Pattern
+- Gestión de estado con StateFlow
+- Inyección manual de dependencias
 
-## 4. Funcionalidades
+## Funcionalidades
 
-- **Formulario validado:** Login y registro con validaciones básicas
-- **Navegación y backstack:** Flujo completo entre pantallas
-- **Gestión de estado:** Indicadores de carga y error
-- **Persistencia local (CRUD):** DataStore y almacenamiento interno de imagen y progreso
-- **Recursos nativos:** Cámara/galería con permisos y fallback
-- **Animaciones:** Feedback visual al cambiar avatar o registrar progreso
-- **Consumo de API:** Integrado con los endpoints definidos en el proyecto
+### Autenticación
 
-## 5. Endpoints (Implementación Actual)
+- Registro de nuevos usuarios
+- Inicio de sesión con JWT
+- Gestión de sesión persistente con DataStore
+- Cierre de sesión
 
-**Base URL:** `https://dummyjson.com/` (configurado en RetrofitClient.kt)
+### Perfil de Usuario
 
-| Método | Ruta | Body | Respuesta Esperada |
-|--------|------|------|-------------------|
-| POST | `user/login` | `{ username, password }` (según DTO LoginRequest) | LoginResponse (token/usuario) |
-| GET | `auth/me` | - (requiere header Authorization) | UserDto con `{ id, email?, name?, avatarUrl? }` |
-| GET | `users` | - | UsersResponse (lista paginada) |
-| GET | `users/search` | `?q=texto` | UsersResponse (resultados filtrados) |
-| GET | `users/{id}` | - | UserDto (usuario por id) |
+- Visualización de datos del usuario
+- Edición de perfil
+- Cambio de avatar con cámara o galería
+- Almacenamiento persistente de imagen
 
-**Nota:** Las rutas y DTOs están definidas en ApiService.kt y en data/remote/dto. Si se desea usar otro backend (por ejemplo Xano), cambia RetrofitClient.BASE_URL y adapta las rutas/DTOs.
+### Módulos Principales
 
-## 6. User Flows
+- **Entrenador**: Listado de entrenadores disponibles con especialidades
+- **Plan de Entrenamiento**: Gestión de rutinas y ejercicios personalizados
+- **Plan Nutricional**: Planificación alimenticia y seguimiento calórico
+- **Progreso**: Registro y visualización de métricas de avance
 
-**Flujo Principal:**
-- Inicio → si isLoggedIn, ir a Home; si no, Login
-- Login/Register → validación → guardar sesión → navegar a Home
-- Home → opciones → Perfil, Entrenador, Plan de Entrenamiento, Plan Nutricional, Progreso
-- Perfil → ver/editar datos, cambiar avatar (cámara/galería)
-- Entrenador → mostrar lista y detalle de entrenadores disponibles
-- Plan de Entrenamiento → ver rutinas asignadas o crear nuevas
-- Plan Nutricional → mostrar menús, recomendaciones y calorías
-- Progreso → registrar peso, IMC y evolución visual
-- Logout → limpia DataStore y redirige a Login
+### Características Técnicas
 
-**Casos de Error:**
-- Sin conexión → mensaje adecuado
-- Permisos cámara denegados → fallback a galería
-- Error API o credenciales → mensaje visible y sin cierre forzado
+- Navegación con Navigation Compose
+- Manejo de permisos (cámara, almacenamiento)
+- Validación de formularios
+- Indicadores de carga y manejo de errores
+- Almacenamiento local con DataStore
+- Consumo de API REST con Retrofit
 
-## 7. Nuevas Secciones (EP4)
+## API Endpoints
 
-**Entrenador:**
-- Gestión de entrenadores, información de contacto y especialidad
-- Interfaz simple con cards, búsqueda y detalles individuales
+Base URL: `http://10.0.2.2:8080/api/`
 
-**Plan de Entrenamiento:**
-- Asignación de rutinas personalizadas al usuario
-- Incluye listado de ejercicios, duración, tipo y días de entrenamiento
+### Autenticación
 
-**Plan Nutricional:**
-- Planificación alimenticia según objetivos (pérdida, mantenimiento, ganancia)
-- Permite registrar alimentos consumidos y calcular calorías
+#### Registro
+```
+POST /users/register
+Body: { "name": "string", "email": "string", "password": "string" }
+Response: { "message": "string", "user": {...}, "token": "string" }
+```
 
-**Progreso:**
-- Seguimiento de métricas (peso, IMC, fotos, gráficos)
-- Se guarda localmente y se visualiza con Compose Charts
+#### Login
+```
+POST /users/login
+Body: { "email": "string", "password": "string" }
+Response: { "message": "string", "user": {...}, "token": "string" }
+```
+
+#### Perfil
+```
+GET /users/profile
+Headers: { "Authorization": "Bearer {token}" }
+Response: { "id": "string", "name": "string", "email": "string" }
+```
+
+#### Usuario por ID
+```
+GET /users/{id}
+Headers: { "Authorization": "Bearer {token}" }
+Response: { "id": "string", "name": "string", "email": "string" }
+Tecnologías Utilizadas
+Android
+
+Kotlin 2.0.21
+Jetpack Compose
+Material Design 3
+Navigation Compose 2.7.7
+Lifecycle ViewModel Compose 2.8.0
+DataStore Preferences 1.0.0
+Coil 2.6.0 (carga de imágenes)
+Accompanist Permissions 0.32.0
+
+Networking
+
+Retrofit 2.11.0
+OkHttp 4.12.0
+Gson Converter 2.11.0
+Coroutines Android 1.9.0
+
+Backend
+
+Node.js
+Express 4.21.2
+MongoDB 7.0.0
+Mongoose 8.19.3
+JWT (jsonwebtoken 9.0.2)
+bcryptjs 3.0.3
+
+Flujo de Usuario
+
+Inicio: La app verifica si hay sesión activa
+Login/Registro: Autenticación contra el backend
+Home: Pantalla principal con acceso a todos los módulos
+Navegación: Acceso a Entrenador, Planes, Progreso y Perfil
+Perfil: Gestión de datos personales y avatar
+Logout: Limpieza de sesión y retorno al login
+
+Manejo de Errores
+
+Validación de campos vacíos
+Mensajes claros de error de red
+Manejo de errores HTTP (400, 401, 500)
+Fallback cuando no hay conexión
+Estados de carga visibles
+
+Seguridad
+
+Tokens JWT con expiración
+Contraseñas hasheadas en el backend
+Comunicación HTTPS (producción)
+Permisos de Android solicitados en runtime
+DataStore para almacenamiento seguro local
+
+Notas de Desarrollo
+
+El emulador Android usa 10.0.2.2 para acceder a localhost del PC
+Los tokens JWT expiran en 1 hora
+Las imágenes de avatar se guardan en almacenamiento interno
+Se requiere permiso de cámara y almacenamiento para cambiar avatar
