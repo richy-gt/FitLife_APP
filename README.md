@@ -2,17 +2,6 @@
 
 Aplicación móvil Android de gestión de entrenamiento y bienestar personal desarrollada con Kotlin y Jetpack Compose.
 
-## Tabla de Contenidos
-- Descripción
-- Requisitos Previos
-- Instalación
-- Configuración del Backend
-- Compilación y Ejecución
-- Arquitectura
-- Funcionalidades
-- API Endpoints
-- Tecnologías Utilizadas
-
 ## Descripción
 
 FitLife es una aplicación móvil que permite a los usuarios gestionar su entrenamiento físico y bienestar personal. Incluye funcionalidades de registro, autenticación, gestión de perfil, planes de entrenamiento, nutrición y seguimiento de progreso.
@@ -31,26 +20,26 @@ FitLife es una aplicación móvil que permite a los usuarios gestionar su entren
 ### Backend
 
 Navegar al directorio del backend:
-```bash
+
 cd backend
-```
+
 
 Instalar dependencias:
-```bash
+
 npm install
-```
+
 
 Configurar variables de entorno en archivo .env:
-```env
+
 PORT=8080
 MONGO_URI=tu_string_conexion_mongodb
 JWT_SECRET=tu_secreto_jwt
-```
+
 
 Iniciar el servidor:
-```bash
+
 npm run dev
-```
+
 
 El servidor estará disponible en http://localhost:8080
 
@@ -59,47 +48,47 @@ El servidor estará disponible en http://localhost:8080
 Abrir el proyecto en Android Studio
 
 Sincronizar dependencias Gradle:
-```bash
+
 ./gradlew build
-```
+
 
 Compilar la aplicación:
-```bash
+
 ./gradlew clean assembleDebug
-```
+
 
 ## Configuración del Backend
 
 La aplicación se conecta al backend mediante RetrofitClient.kt. La URL base está configurada para usar el emulador Android:
-```kotlin
+
 private const val BASE_URL = "http://10.0.2.2:8080/api/"
-```
+
 
 Para dispositivo físico, cambiar a la IP local de tu máquina:
-```kotlin
+
 private const val BASE_URL = "http://192.168.x.x:8080/api/"
-```
+
 
 ## Compilación y Ejecución
 
 **Modo Debug**
-```bash
+
 ./gradlew installDebug
-```
+
 
 O desde Android Studio: Run > Run 'app'
 
 **Modo Release**
-```bash
+
 ./gradlew assembleRelease
-```
+
 
 *Nota: Requiere configuración de firma en `build.gradle.kts`*
 
 ## Arquitectura
 
 ### Estructura del Proyecto
-```
+
 app/
 data/
 local/           # DataStore para sesión y preferencias
@@ -114,7 +103,7 @@ theme/           # Tema y estilos Material3
 profile/         # Perfil de usuario
 viewmodel/       # ViewModels con StateFlow
 MainActivity.kt  # Actividad principal
-```
+
 
 ### Patrón de Arquitectura
 - MVVM (Model-View-ViewModel)
@@ -157,7 +146,7 @@ Base URL: `http://10.0.2.2:8080/api/`
 ### Autenticación
 
 #### Registro
-```
+
 POST /users/register
 Body: 
 {
@@ -171,10 +160,10 @@ Response:
   "user": {...},
   "token": "string"
 }
-```
+
 
 #### Login
-```
+
 POST /users/login
 Body: 
 {
@@ -187,10 +176,10 @@ Response:
   "user": {...},
   "token": "string"
 }
-```
+
 
 #### Perfil
-```
+
 GET /users/profile
 Headers: 
 {
@@ -202,10 +191,10 @@ Response:
   "name": "string",
   "email": "string"
 }
-```
+
 
 #### Usuario por ID
-```
+
 GET /users/{id}
 Headers: 
 {
@@ -217,7 +206,7 @@ Response:
   "name": "string",
   "email": "string"
 }
-```
+
 
 ## Tecnologías Utilizadas
 
