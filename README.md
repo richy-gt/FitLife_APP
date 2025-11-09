@@ -1,263 +1,321 @@
-# FitLife App
+# FitLife APP
 
-Aplicación móvil Android de gestión de entrenamiento y bienestar personal desarrollada con Kotlin y Jetpack Compose.
-
-## Descripción
-
-FitLife es una aplicación móvil que permite a los usuarios gestionar su entrenamiento físico y bienestar personal. Incluye funcionalidades de registro, autenticación, gestión de perfil, planes de entrenamiento, nutrición y seguimiento de progreso.
-
-## Requisitos Previos
-
-- Android Studio Hedgehog o superior
-- JDK 11 o superior
-- Android SDK API 24 o superior
-- Emulador Android o dispositivo físico
-- Node.js 16+ (para el backend)
-- MongoDB Atlas o instancia local
-
-## Instalación
-
-### Backend
-
-Navegar al directorio del backend:
-
-cd backend
+Aplicacion de android para la empresa FitLife con Kotlin
 
 
-Instalar dependencias:
+## Caso elegido y alcance 
 
-npm install
+FitLife es una empresa de gyms que se enfoca en la salud y el bienestar de sus clientes,
+lo cual se ve reflejado en su aplicacion, que revisa y da datos de salud del usuario.
 
+Esta aplicacion tiene validaciones para el inicio de sesion, registro, persistencia.
 
-Configurar variables de entorno en archivo .env:
+## Requisitos y ejecucion
 
-PORT=8080
-MONGO_URI=tu_string_conexion_mongodb
-JWT_SECRET=tu_secreto_jwt
+-Android Studio (version mas actualizada)
+-JDK 11
+-ANDROID SDK 24
+-NODE.JS
+-MONGODB
 
+## Instalacion
 
-Iniciar el servidor:
-
-npm run dev
-
-
-El servidor estará disponible en http://localhost:8080
-
-### Aplicación Android
-
-Abrir el proyecto en Android Studio
-
-Sincronizar dependencias Gradle:
-
-./gradlew build
+-Backend: npm install -> configurar .env con credenciales en MONGO_URI Y JWT_SECRET e iniciar con npm run o npm run dev
 
 
-Compilar la aplicación:
-
-./gradlew clean assembleDebug
-
-
-## Configuración del Backend
-
-La aplicación se conecta al backend mediante RetrofitClient.kt. La URL base está configurada para usar el emulador Android:
-
-private const val BASE_URL = "http://10.0.2.2:8080/api/"
-
-
-Para dispositivo físico, cambiar a la IP local de tu máquina:
-
-private const val BASE_URL = "http://192.168.x.x:8080/api/"
-
-
-## Compilación y Ejecución
-
-**Modo Debug**
-
-./gradlew installDebug
-
-
-O desde Android Studio: Run > Run 'app'
-
-**Modo Release**
-
-./gradlew assembleRelease
-
-
-*Nota: Requiere configuración de firma en `build.gradle.kts`*
-
-## Arquitectura
-
-### Estructura del Proyecto
+## Arquitectura y flujo
 
 app/
 data/
-local/           # DataStore para sesión y preferencias
-remote/          # Retrofit y servicios API
-model/           # Modelos de datos
-repository/      # Repositorios de datos
+local/
+remote/
+model/
+repository/
 ui/
-screens/         # Pantallas principales
-navigation/      # Navegación de la app
-components/      # Componentes reutilizables
-theme/           # Tema y estilos Material3
-profile/         # Perfil de usuario
-viewmodel/       # ViewModels con StateFlow
-MainActivity.kt  # Actividad principal
+screens/
+navigation/
+components/
+theme/
+profile/
+viewmodel/
+mainactivity.kt
 
+Gestion Estado:
+Local: StateFlow en ViewModels individuales por pantalla
+Global: SessionManager (DataStore) para token y email del usuario
 
-### Patrón de Arquitectura
-- MVVM (Model-View-ViewModel)
-- Repository Pattern
-- Gestión de estado con StateFlow
-- Inyección manual de dependencias
+Flujo:
+UI (Composable) 
+   ↓ eventos
+ViewModel 
+   ↓ llamadas
+Repository 
+   ↓ requests
+ApiService/DataStore
+   ↓ respuestas
+ViewModel (actualiza StateFlow)
+   ↓ recomposición
+UI actualizada
 
-## Funcionalidades
+Rutas principales:
 
-### Autenticación
-- Registro de nuevos usuarios
-- Inicio de sesión con JWT
-- Gestión de sesión persistente con DataStore
-- Cierre de sesión
+splash → Verificación de sesión
+login / register → Autenticación
+home → Pantalla principal (hub)
+personalizacion → Perfil de usuario
+camera_avatar → Captura de avatar
+entrenador / plan_entrenamiento / plan_nutricional / progreso
 
-### Perfil de Usuario
-- Visualización de datos del usuario
-- Edición de perfil
-- Cambio de avatar con cámara o galería
-- Almacenamiento persistente de imagen
+## Funcionalidades:
 
-### Módulos Principales
-- **Entrenador**: Listado de entrenadores disponibles con especialidades
-- **Plan de Entrenamiento**: Gestión de rutinas y ejercicios personalizados
-- **Plan Nutricional**: Planificación alimenticia y seguimiento calórico
-- **Progreso**: Registro y visualización de métricas de avance
+Formulario validado
+Registro (RegisterScreen.kt):
 
-### Características Técnicas
-- Navegación con Navigation Compose
-- Manejo de permisos (cámara, almacenamiento)
-- Validación de formularios
-- Indicadores de carga y manejo de errores
-- Almacenamiento local con DataStore
-- Consumo de API REST con Retrofit
+Nombre: Solo letras, mínimo 3 caracteres
+Email: Formato válido (validación con Patterns.EMAIL_ADDRESS)
+Contraseña: Mínimo 8 caracteres, 1 mayúscula, 1 número, 1 carácter especial
 
-## API Endpoints
+Login (LoginScreen.kt):
 
-Base URL: `http://10.0.2.2:8080/api/`
+Email válido
+Contraseña no vacía
+Mensajes de error en tiempo real
 
-### Autenticación
+Navegación y backstack
 
-#### Registro
+Stack navigation con NavHost
+Decisión automática en splash: si hay sesión activa → home, sino → login
+Back button respetado en todas las pantallas
+PopUpTo para evitar volver a login después de autenticarse
 
-POST /users/register
-Body: 
-{
-  "name": "string",
-  "email": "string", 
-  "password": "string"
+Gestión de estado (carga/éxito/error)
+Estados manejados:
+kotlinwhen {
+    state.isLoading -> CircularProgressIndicator()
+    state.error != null -> Text(state.error)
+    else -> /* UI normal */
 }
-Response: 
-{
-  "message": "string",
-  "user": {...},
-  "token": "string"
+Indicadores:
+
+Spinners durante llamadas API
+Cards de error con mensaje descriptivo
+Deshabilitación de botones durante carga
+
+Persistencia local
+DataStore (SessionManager.kt):
+
+Token JWT
+Email de usuario
+Estado de login
+
+Almacenamiento de archivo (AvatarStorage.kt):
+
+Copia la imagen desde URI temporal a almacenamiento interno
+Ruta persistente: app_filesDir/avatar/avatar.jpg
+Limpieza al cerrar sesión
+
+Almacenamiento de imagen de perfil
+Flujo completo:
+
+Usuario selecciona cámara o galería
+Se solicitan permisos (Accompanist)
+Imagen capturada → AvatarStorage.persistFromUri()
+Se guarda URI en AvatarPreferences
+Carga con Coil en ProfileScreen
+Animación de escala al actualizar
+
+Recursos nativos: cámara/galería
+Implementación (CameraAvatarScreen.kt):
+Permisos solicitados:
+
+CAMERA
+READ_MEDIA_IMAGES (Android 13+)
+READ_EXTERNAL_STORAGE (Android 12-)
+
+Launchers:
+kotlinval tomarFotoLauncher = rememberLauncherForActivityResult(
+    ActivityResultContracts.TakePicture()
+) { ok -> /* guardar */ }
+
+val elegirImagenLauncher = rememberLauncherForActivityResult(
+    ActivityResultContracts.PickVisualMedia()
+) { uri -> /* guardar */ }
+Fallback:
+
+Si no se conceden permisos, se muestra mensaje informativo
+Si la cámara no está disponible, solo se habilita galería
+
+Animaciones con propósito
+Avatar con escala (ProfileScreen.kt):
+kotlinval scale by animateFloatAsState(
+    targetValue = if (localAvatarUri != null) 1.05f else 1f,
+    animationSpec = tween(durationMillis = 600)
+)
+
+Box(modifier = Modifier.scale(scale)) {
+    Image(...)
+}
+Propósito: Feedback visual al usuario cuando la imagen se actualiza exitosamente.
+Consumo de API
+Endpoints consumidos:
+
+POST /users/register - Registro de usuario
+POST /users/login - Autenticación
+GET /users/profile - Obtener datos del usuario autenticado (incluye /me)
+GET /users/{id} - Obtener usuario por ID
+
+Autenticación:
+
+Header: Authorization: Bearer <token>
+Interceptor automático (AuthInterceptor.kt)
+
+Manejo de errores:
+kotlincatch (e: HttpException) {
+    when (e.code()) {
+        401 -> "Usuario o contraseña incorrectos"
+        404 -> "Servicio no encontrado"
+        500 -> "Error en el servidor"
+    }
+}
+catch (e: IOException) {
+    "Sin conexión a Internet"
 }
 
+---
 
-#### Login
+## 5. Endpoints
 
-POST /users/login
-Body: 
-{
-  "email": "string",
-  "password": "string"
-}
-Response: 
-{
-  "message": "string",
-  "user": {...},
-  "token": "string"
-}
+**Base URL:** `http://10.0.2.2:8080/api/`
 
+| Método | Ruta              | Body                                      | Respuesta                                                              |
+|--------|-------------------|-------------------------------------------|------------------------------------------------------------------------|
+| POST   | `/users/register` | `{ "email": "user@mail.com", "password": "Pass123!", "name": "Juan" }` | `201 { "message": "...", "user": { "id", "email", "name" }, "token" }` |
+| POST   | `/users/login`    | `{ "email": "user@mail.com", "password": "Pass123!" }`                 | `200 { "message": "...", "user": { "id", "email" }, "token" }`         |
+| GET    | `/users/profile`  | - (requiere header `Authorization: Bearer <token>`)                    | `200 { "id", "name", "email" }`                                        |
+| GET    | `/users/{id}`     | - (requiere header `Authorization: Bearer <token>`)                    | `200 { "id", "name", "email" }`                                        |
+| GET    | `/users`          | - (requiere header `Authorization: Bearer <token>`)                    | `200 { "users": [{ "id", "name", "email" }] }`                         |
 
-#### Perfil
+---
 
-GET /users/profile
-Headers: 
-{
-  "Authorization": "Bearer {token}"
-}
-Response: 
-{
-  "id": "string",
-  "name": "string",
-  "email": "string"
-}
+## 6. Flujo principal: Registro y Login
+
+Inicio de la aplicación:
+
+La app verifica en SplashDecider si existe una sesión activa (token y email guardados en DataStore)
+Si hay sesión → Navega directamente a HomeScreen
+Si no hay sesión → Navega a LoginScreen
 
 
-#### Usuario por ID
+Registro de nuevo usuario:
 
-GET /users/{id}
-Headers: 
-{
-  "Authorization": "Bearer {token}"
-}
-Response: 
-{
-  "id": "string",
-  "name": "string",
-  "email": "string"
-}
+Usuario accede a RegisterScreen desde el link "¿No tienes cuenta?"
+Completa el formulario: nombre, email y contraseña
+Las validaciones se ejecutan en tiempo real:
+
+Nombre: solo letras, mínimo 3 caracteres
+Email: formato válido
+Contraseña: mínimo 8 caracteres, 1 mayúscula, 1 número, 1 símbolo
 
 
-## Tecnologías Utilizadas
+Al presionar "Registrarse", el RegisterViewModel ejecuta POST /users/register
+Si es exitoso: guarda token y email en DataStore, muestra mensaje de éxito
+Usuario presiona "Ir al login" y es redirigido a LoginScreen
 
-### Android
-- Kotlin 2.0.21
-- Jetpack Compose
-- Material Design 3
-- Navigation Compose 2.7.7
-- Lifecycle ViewModel Compose 2.8.0
-- DataStore Preferences 1.0.0
-- Coil 2.6.0 (carga de imágenes)
-- Accompanist Permissions 0.32.0
 
-### Networking
-- Retrofit 2.11.0
-- OkHttp 4.12.0
-- Gson Converter 2.11.0
-- Coroutines Android 1.9.0
+Inicio de sesión:
 
-### Backend
-- Node.js
-- Express 4.21.2
-- MongoDB 7.0.0
-- Mongoose 8.19.3
-- JWT (jsonwebtoken 9.0.2)
-- bcryptjs 3.0.3
+Usuario ingresa email y contraseña en LoginScreen
+Al presionar "Ingresar", el LoginViewModel ejecuta POST /users/login
+Si las credenciales son correctas:
 
-## Flujo de Usuario
-- **Inicio**: La app verifica si hay sesión activa
-- **Login/Registro**: Autenticación contra el backend
-- **Home**: Pantalla principal con acceso a todos los módulos
-- **Navegación**: Acceso a Entrenador, Planes, Progreso y Perfil
-- **Perfil**: Gestión de datos personales y avatar
-- **Logout**: Limpieza de sesión y retorno al login
+Guarda token JWT en SessionManager
+Guarda email en UserPreferences
+Marca isLoggedIn = true
+Navega a HomeScreen eliminando el login del backstack
 
-## Manejo de Errores
-- Validación de campos vacíos
-- Mensajes claros de error de red
-- Manejo de errores HTTP (400, 401, 500)
-- Fallback cuando no hay conexión
-- Estados de carga visibles
 
-## Seguridad
-- Tokens JWT con expiración
-- Contraseñas hasheadas en el backend
-- Comunicación HTTPS (producción)
-- Permisos de Android solicitados en runtime
-- DataStore para almacenamiento seguro local
+Si hay error: muestra mensaje descriptivo (credenciales incorrectas, sin internet, etc.)
 
-## Notas de Desarrollo
-- El emulador Android usa 10.0.2.2 para acceder a localhost del PC
-- Los tokens JWT expiran en 1 hora
-- Las imágenes de avatar se guardan en almacenamiento interno
-- Se requiere permiso de cámara y almacenamiento para cambiar avatar
+
+
+Flujo de navegación en la app
+
+Pantalla principal (Home):
+
+Muestra el email del usuario autenticado
+Botones para navegar a:
+
+Perfil → ProfileScreen
+Entrenador → Lista de entrenadores disponibles
+Plan de Entrenamiento → Lista de rutinas
+Plan Nutricional → Lista de planes alimenticios
+Progreso → Métricas del usuario
+
+
+Botón "Cerrar sesión" que limpia el token y vuelve a login
+
+
+Visualización del perfil:
+
+Usuario navega a ProfileScreen
+El ProfileViewModel ejecuta GET /users/profile con el token JWT
+Muestra:
+
+Avatar del usuario (imagen guardada localmente o icono por defecto)
+Nombre completo
+Email
+Botón "Cambiar foto"
+Botón "Refrescar datos"
+Botón "Cerrar sesión"
+
+
+
+
+
+Flujo de cambio de avatar
+
+Captura/Selección de imagen:
+
+Usuario presiona "Cambiar foto" en el perfil
+Navega a CameraAvatarScreen
+Opciones disponibles:
+
+Tomar foto: solicita permiso de cámara, abre la cámara nativa
+Elegir de galería: solicita permiso de almacenamiento, abre el selector de imágenes
+
+
+Si el usuario deniega permisos: muestra mensaje informativo pero no bloquea la app
+Una vez seleccionada/capturada la imagen:
+
+Se guarda en almacenamiento interno persistente con AvatarStorage.persistFromUri()
+Se guarda la URI en AvatarPreferences
+Vuelve automáticamente a ProfileScreen
+La imagen se actualiza con animación de escala
+
+Casos de error
+
+Error de autenticación:
+
+Usuario ingresa credenciales incorrectas → Se muestra "Usuario o contraseña incorrectos"
+Token expirado al consultar perfil → Se muestra "Sesión expirada" y debe hacer login nuevamente
+
+
+Error de conexión:
+
+Sin internet al intentar login/registro → "Sin conexión a Internet. Verifica tu red"
+Backend no disponible → "Error en el servidor. Intenta más tarde"
+
+
+Error de permisos:
+
+Permisos de cámara denegados → No se abre la cámara, se muestra Snackbar informativo
+Permisos de galería denegados → No se abre el selector, usuario debe configurar permisos manualmente
+
+
+Cierre de sesión:
+
+Usuario presiona "Cerrar sesión" desde Home o Perfil
+Se ejecuta SessionManager.logout() que limpia todo el DataStore
+Se ejecuta AvatarStorage.clear() que elimina la imagen del avatar
+Navega a LoginScreen eliminando todo el historial del backstack
+Usuario debe autenticarse nuevamente para acceder a la app
