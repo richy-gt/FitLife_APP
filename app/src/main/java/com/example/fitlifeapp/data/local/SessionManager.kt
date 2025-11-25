@@ -16,6 +16,7 @@ class SessionManager(private val context: Context) {
     companion object {
         private val TOKEN_KEY = stringPreferencesKey("token")
         private val EMAIL_KEY = stringPreferencesKey("email")
+        private val NAME_KEY = stringPreferencesKey("name") // Nueva clave para el nombre
         private val IS_LOGGED_IN_KEY = booleanPreferencesKey("is_logged_in")
     }
 
@@ -42,6 +43,18 @@ class SessionManager(private val context: Context) {
     suspend fun getUserEmail(): String? {
         return context.dataStore.data.map { it[EMAIL_KEY] }.first()
     }
+
+    // --- Nuevas funciones para el nombre del usuario ---
+    suspend fun saveUserName(name: String) {
+        context.dataStore.edit { prefs ->
+            prefs[NAME_KEY] = name
+        }
+    }
+
+    suspend fun getUserName(): String? {
+        return context.dataStore.data.map { it[NAME_KEY] }.first()
+    }
+    // -----------------------------------------------
 
 
     suspend fun saveLoginState(isLoggedIn: Boolean) {

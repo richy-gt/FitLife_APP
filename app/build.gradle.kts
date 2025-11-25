@@ -60,25 +60,38 @@ dependencies {
     // --- Coroutines ---
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
-    // --- DataStore (para token y avatar) ---
+    // --- DataStore ---
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 
-    // --- Coil (imágenes) ---
+    // --- Coil ---
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    // --- Permisos Compose (Accompanist) ---
+    // --- Permisos Compose ---
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
 
-    // Add this line for ViewModel integration with Compose
+    // --- ViewModel Compose ---
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
 
-    val nav_version = "2.7.7" // Or a more recent version
+    // --- Navigation ---
+    val nav_version = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
-    // ViewModel Compose Integration
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
-
+    // ===== TESTING DEPENDENCIES =====
     testImplementation(libs.junit)
+
+    // MockK para mocking
+    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("io.mockk:mockk-android:1.13.8")
+
+    // Coroutines Test
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+
+    // Arch Core Testing (para InstantTaskExecutorRule)
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+
+    // Turbine para testing de Flows
+    testImplementation("app.cash.turbine:turbine:1.0.0")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

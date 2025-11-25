@@ -20,14 +20,12 @@ data class RegisterUiState(
     val errorMessage: String? = null
 )
 
-class RegisterViewModel(app: Application) : AndroidViewModel(app) {
-
-    private val apiService: ApiService = RetrofitClient
-        .createPublic()
-        .create(ApiService::class.java)
-
-    private val sessionManager = SessionManager(app)
-    private val userPreferences = UserPreferences(app)
+class RegisterViewModel @JvmOverloads constructor(
+    app: Application,
+    private val apiService: ApiService = RetrofitClient.createPublic().create(ApiService::class.java),
+    private val sessionManager: SessionManager = SessionManager(app),
+    private val userPreferences: UserPreferences = UserPreferences(app)
+) : AndroidViewModel(app) {
 
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState: StateFlow<RegisterUiState> = _uiState

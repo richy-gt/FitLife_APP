@@ -19,13 +19,11 @@ data class ProfileUiState(
     val error: String? = null
 )
 
-class ProfileViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val apiService: ApiService = RetrofitClient
-        .create(application)
-        .create(ApiService::class.java)
-
-    private val sessionManager = SessionManager(application)
+class ProfileViewModel @JvmOverloads constructor(
+    application: Application,
+    private val apiService: ApiService = RetrofitClient.create(application).create(ApiService::class.java),
+    private val sessionManager: SessionManager = SessionManager(application)
+) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState
@@ -38,10 +36,13 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private fun loadInitialDataFromSession() {
         viewModelScope.launch {
             val userEmail = sessionManager.getUserEmail()
+            val userName = sessionManager.getUserName() // <-- Cargamos el nombre real
+
             if (userEmail != null) {
                 _uiState.value = _uiState.value.copy(
                     userEmail = userEmail,
-                    userName = userEmail.substringBefore('@')
+                    // Si tenemos el nombre guardado, lo usamos. Si no, fallback al email.
+                    userName = userName ?: userEmail.substringBefore('@') 
                 )
             }
             // After loading initial data, fetch the full profile
@@ -72,6 +73,10 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
 
                 if (response.isSuccessful && response.body() != null) {
                     val user = response.body()!!
+                    
+                    // Guardamos el nombre actualizado para la próxima vez
+                    user.name?.let { sessionManager.saveUserName(it) }
+
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         userName = user.name ?: _uiState.value.userName,
