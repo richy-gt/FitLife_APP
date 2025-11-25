@@ -114,6 +114,13 @@ fun HomeScreen(navController: NavHostController) {
                 Text("Progreso")
             }
 
+            Button(
+                onClick = { navController.navigate("productos") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Productos")
+            }
+
 
             Spacer(modifier = Modifier.height(24.dp))
 

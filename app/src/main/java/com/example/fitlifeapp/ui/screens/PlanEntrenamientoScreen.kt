@@ -17,10 +17,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.fitlifeapp.data.model.PlanEntrenamiento
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewPlanEntrenamientoScreen() {
+    val navController = rememberNavController()
+    PlanEntrenamientoScreen(navController)
+}
 @Composable
 fun PlanEntrenamientoScreen(navController: NavHostController) {
     val planes = listOf(
@@ -28,19 +36,24 @@ fun PlanEntrenamientoScreen(navController: NavHostController) {
         PlanEntrenamiento("Plan de Fuerza y Volumen", "Diseñado para aquellos que quieren aumentar su masa muscular y fuerza.", "8 semanas")
     )
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Button(onClick = { navController.navigate("home") }) {
-            Text("Volver al Menú Principal")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(35.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(planes) { plan ->
                 PlanEntrenamientoCard(plan)
             }
+        }
+
+        Button(onClick = { navController.navigate("home") }) {
+            Text("Volver al Menú Principal")
         }
     }
 }

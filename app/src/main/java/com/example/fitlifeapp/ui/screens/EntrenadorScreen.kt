@@ -29,6 +29,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.fitlifeapp.R
 import com.example.fitlifeapp.data.model.Entrenador
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewEntrenadorScreen() {
+    val navController = rememberNavController()
+    EntrenadorScreen(navController)
+}
 
 @Composable
 fun EntrenadorScreen(navController: NavHostController) {
@@ -38,21 +47,27 @@ fun EntrenadorScreen(navController: NavHostController) {
         Entrenador("Sofía Vargas", "Instructora de yoga y flexibilidad", "")
     )
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Button(onClick = { navController.navigate("home") }) {
-            Text("Volver al Menú Principal")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(35.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(entrenadores) { entrenador ->
                 EntrenadorCard(entrenador)
             }
         }
+
+        Button(onClick = { navController.navigate("home") }) {
+            Text("Volver al Menú Principal")
+        }
     }
+
 }
 
 @Composable

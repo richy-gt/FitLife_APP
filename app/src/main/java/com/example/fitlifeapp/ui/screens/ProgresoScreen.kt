@@ -1,4 +1,3 @@
-
 package com.example.fitlifeapp.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
@@ -25,15 +24,20 @@ fun ProgresoScreen(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
+
+        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            ProgresoItem("Peso Corporal", "75 kg", 0.75f)
+            ProgresoItem("Grasa Corporal", "15%", 0.15f)
+            ProgresoItem("Masa Muscular", "40%", 0.40f)
+        }
+
         Button(onClick = { navController.navigate("home") }) {
             Text("Volver al Menú Principal")
         }
-        ProgresoItem("Peso Corporal", "75 kg", 0.75f)
-        ProgresoItem("Grasa Corporal", "15%", 0.15f)
-        ProgresoItem("Masa Muscular", "40%", 0.40f)
     }
+
 }
 
 @Composable

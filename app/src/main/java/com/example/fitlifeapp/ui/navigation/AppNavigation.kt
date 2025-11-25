@@ -17,6 +17,7 @@ import com.example.fitlifeapp.ui.screens.EntrenadorScreen
 import com.example.fitlifeapp.ui.screens.PlanEntrenamientoScreen
 import com.example.fitlifeapp.ui.screens.PlanNutricionalScreen
 import com.example.fitlifeapp.ui.screens.ProgresoScreen
+import com.example.fitlifeapp.ui.screens.ProductosScreen
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -41,6 +42,7 @@ fun AppNavigation(navController: NavHostController) {
         composable("plan_entrenamiento") { PlanEntrenamientoScreen(navController) }
         composable("plan_nutricional") { PlanNutricionalScreen(navController) }
         composable("progreso") { ProgresoScreen(navController) }
+        composable("productos") { ProductosScreen(navController) }
         composable("personalizacion") { ProfileScreen(navController) }
         composable("camera_avatar") { CameraAvatarScreen(navController) }
     }

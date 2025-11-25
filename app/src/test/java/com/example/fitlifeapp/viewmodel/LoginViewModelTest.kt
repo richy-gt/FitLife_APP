@@ -267,7 +267,7 @@ class LoginViewModelTest {
                 name = "Test User",
                 email = testEmail
             ),
-            token = null // Token nulo
+            token = null
         )
 
         coEvery {
