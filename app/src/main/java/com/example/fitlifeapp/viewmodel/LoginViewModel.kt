@@ -22,7 +22,8 @@ data class LoginUiState(
 
 class LoginViewModel @JvmOverloads constructor(
     app: Application,
-    private val apiService: ApiService = RetrofitClient.create(app).create(ApiService::class.java),
+    private val apiService: ApiService =
+        RetrofitClient.createPublic().create(ApiService::class.java),
     private val sessionManager: SessionManager = SessionManager(app),
     private val userPreferences: UserPreferences = UserPreferences(app)
 ) : AndroidViewModel(app) {
@@ -62,7 +63,7 @@ class LoginViewModel @JvmOverloads constructor(
 
                     sessionManager.saveToken(body.token ?: "")
                     sessionManager.saveUserEmail(body.user?.email ?: email)
-                    
+
                     // --- Guardamos el nombre ---
                     val userName = body.user?.name ?: "Usuario"
                     sessionManager.saveUserName(userName)
