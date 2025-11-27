@@ -10,7 +10,6 @@ interface NutritionApiService {
     suspend fun getNutritionData(
         @Query("app_id") appId: String,
         @Query("app_key") appKey: String,
-        @Query("nutrition-type") nutritionType: String = "logging",
         @Query("ingr") ingredient: String
     ): Response<NutritionResponse>
 }

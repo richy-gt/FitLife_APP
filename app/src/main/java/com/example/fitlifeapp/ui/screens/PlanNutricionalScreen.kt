@@ -40,12 +40,11 @@ fun PlanNutricionalScreen(
         PlanNutricional("Dieta Vegetariana Completa", "Plan basado en plantas que asegura el aporte adecuado de proteínas.", 2200)
     )
 
-    // Sugerencias de alimentos saludables
     val foodSuggestions = listOf(
-        FoodSuggestion("Pollo a la plancha 100g", "100g", "🍗", "Alto en proteínas, bajo en grasa"),
-        FoodSuggestion("Arroz integral 1 taza", "1 cup", "🍚", "Carbohidratos complejos, fibra"),
-        FoodSuggestion("Brócoli 100g", "100g", "🥦", "Rico en vitaminas, bajo en calorías"),
-        FoodSuggestion("Salmón 100g", "100g", "🐟", "Omega-3, proteínas de calidad"),
+        FoodSuggestion("Pollo a la plancha 100g", "100g chicken breast", "🍗", "Alto en proteínas, bajo en grasa"),
+        FoodSuggestion("Arroz integral 1 taza", "1 cup brown rice", "🍚", "Carbohidratos complejos, fibra"),
+        FoodSuggestion("Brócoli 100g", "100g broccoli", "🥦", "Rico en vitaminas, bajo en calorías"),
+        FoodSuggestion("Salmón 100g", "100g salmon", "🐟", "Omega-3, proteínas de calidad"),
         FoodSuggestion("Aguacate medio", "1/2 avocado", "🥑", "Grasas saludables, saciedad"),
         FoodSuggestion("Huevos 2 unidades", "2 large eggs", "🥚", "Proteína completa, económico")
     )
@@ -71,7 +70,6 @@ fun PlanNutricionalScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            // Sección de consejos nutricionales con API externa
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -94,7 +92,6 @@ fun PlanNutricionalScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Grid de sugerencias de alimentos
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         foodSuggestions.chunked(2).forEach { rowItems ->
                             Row(
@@ -119,7 +116,6 @@ fun PlanNutricionalScreen(
                         }
                     }
 
-                    // Mostrar información nutricional
                     if (nutritionState.isLoading) {
                         Box(
                             modifier = Modifier
@@ -147,7 +143,6 @@ fun PlanNutricionalScreen(
                 }
             }
 
-            // Sección de planes nutricionales
             Text(
                 "📋 Planes Disponibles",
                 style = MaterialTheme.typography.titleLarge,
@@ -230,7 +225,6 @@ fun NutritionInfoCard(data: com.example.fitlifeapp.viewmodel.NutritionData, bene
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Macronutrientes
             NutrientRow("🔥 Calorías", "${data.calories} kcal")
             NutrientRow("🥩 Proteínas", "${String.format("%.1f", data.protein)}g")
             NutrientRow("🍞 Carbohidratos", "${String.format("%.1f", data.carbs)}g")
