@@ -170,25 +170,11 @@ fun RegisterScreen(
                         // ----------------------------
                         Button(
                             onClick = {
-                                if (email.isBlank() || password.isBlank() || name.isBlank()) {
-                                    Toast.makeText(
-                                        navController.context,
-                                        "Completa todos los campos",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else if (emailError == null && nameError == null && passwordError == null) {
-                                    // Si todo es correcto
-                                    viewModel.register(email, password, name)
-                                } else {
-                                    Toast.makeText(
-                                        navController.context,
-                                        "Corrige los errores antes de continuar",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                viewModel.register(email, password, name)
                             },
                             modifier = Modifier.fillMaxWidth(),
                             enabled = name.isNotBlank() && email.isNotBlank() && password.isNotBlank()
+                                    && nameError == null && emailError == null && passwordError == null
                         ) {
                             Text("Registrarse")
                         }

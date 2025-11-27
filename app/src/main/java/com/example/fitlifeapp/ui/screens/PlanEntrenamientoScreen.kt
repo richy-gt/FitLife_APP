@@ -1,4 +1,3 @@
-
 package com.example.fitlifeapp.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.fitlifeapp.data.model.PlanEntrenamiento
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.Alignment
 
 @Preview(showBackground = true)
 @Composable
@@ -33,7 +34,10 @@ fun PreviewPlanEntrenamientoScreen() {
 fun PlanEntrenamientoScreen(navController: NavHostController) {
     val planes = listOf(
         PlanEntrenamiento("Plan de Inicio Rápido", "Ideal para principiantes que buscan mejorar su condición física general.", "4 semanas"),
-        PlanEntrenamiento("Plan de Fuerza y Volumen", "Diseñado para aquellos que quieren aumentar su masa muscular y fuerza.", "8 semanas")
+        PlanEntrenamiento("Plan de Fuerza y Volumen", "Diseñado para aquellos que quieren aumentar su masa muscular y fuerza.", "8 semanas"),
+        PlanEntrenamiento("Plan Quema Grasa - Cardio Intenso", "Entrenamientos de alta intensidad (HIIT) y cardio para maximizar la quema de calorías y la definición muscular.", "6 semanas"),
+        PlanEntrenamiento("Plan Yoga y Flexibilidad", "Rutinas diarias centradas en la movilidad, el equilibrio y la reducción del estrés. Ideal para mejorar la postura y prevenir lesiones.", "10 semanas"),
+        PlanEntrenamiento("Plan Mantenimiento y Tono", "Diseñado para personas que ya tienen una base de entrenamiento y desean mantener su nivel de fitness y tonificar el cuerpo sin buscar cambios drásticos de volumen.", "Indefinido")
     )
 
     Column(
@@ -45,7 +49,8 @@ fun PlanEntrenamientoScreen(navController: NavHostController) {
 
         LazyColumn(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             items(planes) { plan ->
                 PlanEntrenamientoCard(plan)
@@ -61,7 +66,7 @@ fun PlanEntrenamientoScreen(navController: NavHostController) {
 @Composable
 fun PlanEntrenamientoCard(plan: PlanEntrenamiento) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(0.90f),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(

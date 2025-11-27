@@ -16,6 +16,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +34,10 @@ fun PreviewPlanNutricionalScreen() {
 fun PlanNutricionalScreen(navController: NavHostController) {
     val planes = listOf(
         PlanNutricional("Dieta Balanceada", "Una dieta equilibrada para mantener un estilo de vida saludable.", 2000),
-        PlanNutricional("Dieta de Definición", "Alta en proteínas y baja en carbohidratos para maximizar la pérdida de grasa.", 1800)
+        PlanNutricional("Dieta de Definición", "Alta en proteínas y baja en carbohidratos para maximizar la pérdida de grasa.", 1800),
+        PlanNutricional("Dieta de Volumen Limpio", "Plan diseñado para el crecimiento muscular con un ligero excedente calórico, priorizando carbohidratos complejos y grasas saludables.", 3000),
+        PlanNutricional("Dieta Keto Simplificada", "Un enfoque muy bajo en carbohidratos y alto en grasas para inducir la cetosis y usar la grasa corporal como fuente principal de energía.", 1900),
+        PlanNutricional("Dieta Vegetariana Completa", "Plan basado en plantas que asegura el aporte adecuado de proteínas y micronutrientes, ideal para atletas con restricciones dietéticas.", 2200)
     )
 
     Column(
@@ -45,7 +49,8 @@ fun PlanNutricionalScreen(navController: NavHostController) {
 
         LazyColumn(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             items(planes) { plan ->
                 PlanNutricionalCard(plan)
@@ -61,7 +66,7 @@ fun PlanNutricionalScreen(navController: NavHostController) {
 @Composable
 fun PlanNutricionalCard(plan: PlanNutricional) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(0.90f),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(

@@ -15,35 +15,54 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.Alignment
 
+@Preview(showBackground = true)
 @Composable
+fun PreviewProgresoScreen() {
+    val navController = rememberNavController()
+    ProgresoScreen(navController)
+}
+@Composable
+
 fun ProgresoScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween
+
+        verticalArrangement = Arrangement.Center,
+
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
+        Column(
+            verticalArrangement = Arrangement.spacedBy(40.dp),
+
+        ) {
             ProgresoItem("Peso Corporal", "75 kg", 0.75f)
             ProgresoItem("Grasa Corporal", "15%", 0.15f)
             ProgresoItem("Masa Muscular", "40%", 0.40f)
         }
 
+
+        Spacer(modifier = Modifier.height(200.dp))
+
         Button(onClick = { navController.navigate("home") }) {
             Text("Volver al Menú Principal")
         }
     }
-
 }
 
 @Composable
 fun ProgresoItem(statName: String, statValue: String, progress: Float) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(0.9f),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(

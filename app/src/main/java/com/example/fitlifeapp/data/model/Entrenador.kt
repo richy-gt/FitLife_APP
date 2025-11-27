@@ -3,5 +3,5 @@ package com.example.fitlifeapp.data.model
 data class Entrenador(
     val name: String,
     val specialization: String,
-    val photoUrl: String
+    val photoResId: Int
 )

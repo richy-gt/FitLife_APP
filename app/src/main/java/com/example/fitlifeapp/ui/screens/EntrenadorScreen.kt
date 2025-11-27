@@ -32,6 +32,7 @@ import com.example.fitlifeapp.data.model.Entrenador
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewEntrenadorScreen() {
@@ -41,10 +42,13 @@ fun PreviewEntrenadorScreen() {
 
 @Composable
 fun EntrenadorScreen(navController: NavHostController) {
+
     val entrenadores = listOf(
-        Entrenador("Ana Torres", "Especialista en cardio y pérdida de peso", ""),
-        Entrenador("Carlos Ruiz", "Experto en musculación y fuerza", ""),
-        Entrenador("Sofía Vargas", "Instructora de yoga y flexibilidad", "")
+        Entrenador("Ana Torres", "Especialista en cardio y pérdida de peso", R.drawable.entrenadora),
+        Entrenador("Carlos Ruiz", "Experto en musculación y fuerza", R.drawable.entrenador),
+        Entrenador("Sofía Vargas", "Instructora de yoga y flexibilidad", R.drawable.entrenadora2),
+        Entrenador("Qatricio Puilodran", "Especialista en entrenamiento funcional", R.drawable.entrenador2),
+        Entrenador("Sicardo Raez", "Especialista en musculación", R.drawable.entrenador3),
     )
 
     Column(
@@ -81,7 +85,7 @@ fun EntrenadorCard(entrenador: Entrenador) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background), // Reemplaza con una imagen real
+                painter = painterResource(id = entrenador.photoResId),
                 contentDescription = "Foto de ${entrenador.name}",
                 modifier = Modifier
                     .size(80.dp)

@@ -126,7 +126,8 @@ fun LoginScreen(
                     viewModel.login(username, password)
                 }
             },
-            enabled = !uiState.isLoading && username.isNotBlank() && password.isNotBlank(),
+
+            enabled = !uiState.isLoading && username.isNotBlank() && password.isNotBlank() && emailError == null,
             modifier = Modifier.fillMaxWidth()
         ) {
             if (uiState.isLoading) {

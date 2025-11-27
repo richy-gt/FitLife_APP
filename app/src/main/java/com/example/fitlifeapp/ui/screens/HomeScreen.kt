@@ -13,7 +13,17 @@ import androidx.navigation.NavHostController
 import com.example.fitlifeapp.AvatarStorage
 import com.example.fitlifeapp.data.local.SessionManager
 import kotlinx.coroutines.launch
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.text.font.FontWeight
 
+
+@Preview
+@Composable
+fun HomeScreenPreview() {
+    val navController = rememberNavController()
+    HomeScreen(navController)
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavHostController) {
@@ -37,9 +47,9 @@ fun HomeScreen(navController: NavHostController) {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "🏋️ FitLife",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        text = "FitLife",
+                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
             )
@@ -55,7 +65,7 @@ fun HomeScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Bienvenido a FitLife 💪",
+                text = "¡Bienvenido a FitLife!",
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -81,44 +91,82 @@ fun HomeScreen(navController: NavHostController) {
                     containerColor = MaterialTheme.colorScheme.secondary,
                     contentColor = MaterialTheme.colorScheme.onSecondary
                 ),
+
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Ir a perfil 👤")
+                Text("Ir a perfil",fontWeight = FontWeight.Bold)
             }
 
-            Button(
-                onClick = { navController.navigate("entrenador") },
-                modifier = Modifier.fillMaxWidth()
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Entrenador")
+
+                Button(
+                    onClick = { navController.navigate("entrenador") },
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text("Entrenador")
+                }
+
             }
 
-            Button(
-                onClick = { navController.navigate("plan_entrenamiento") },
-                modifier = Modifier.fillMaxWidth()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Plan de Entrenamiento")
+
+                Button(
+                    onClick = { navController.navigate("plan_entrenamiento") },
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text("Entrenamiento")
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Button(
+                    onClick = { navController.navigate("plan_nutricional") },
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text("Plan Nutricional")
+                }
+
             }
 
-            Button(
-                onClick = { navController.navigate("plan_nutricional") },
-                modifier = Modifier.fillMaxWidth()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Plan Nutricional")
-            }
 
-            Button(
-                onClick = { navController.navigate("progreso") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Progreso")
-            }
+                Button(
+                    onClick = { navController.navigate("progreso") },
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text("Progreso")
+                }
 
-            Button(
-                onClick = { navController.navigate("productos") },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Productos")
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Button(
+                    onClick = { navController.navigate("productos") },
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    Text("Productos")
+                }
             }
 
 
@@ -129,7 +177,7 @@ fun HomeScreen(navController: NavHostController) {
                     scope.launch {
                         val sessionManager = SessionManager(context)
                         sessionManager.logout()
-                        AvatarStorage.clear(context) // ✨ Borra la imagen
+                        AvatarStorage.clear(context)
                         navController.navigate("login") {
                             popUpTo(navController.graph.startDestinationId) {
                                 inclusive = true
@@ -141,10 +189,12 @@ fun HomeScreen(navController: NavHostController) {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError
+
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Cerrar sesión")
+                Text("Cerrar sesión",fontWeight = FontWeight.Bold)
+
             }
         }
     }
