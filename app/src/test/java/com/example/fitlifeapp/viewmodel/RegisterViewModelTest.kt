@@ -122,4 +122,53 @@ class RegisterViewModelTest {
             assertEquals("Sin conexión a Internet", state.errorMessage)
         }
     }
+
+    @Test
+    fun `register con error 500 debe mostrar mensaje de error del servidor`() = runTest {
+        val request = RegisterRequest("test@example.com", "password123", "Test User")
+        val httpException = HttpException(
+            Response.error<RegisterResponse>(
+                500,
+                "Internal Server Error".toResponseBody()
+            )
+        )
+
+        coEvery { mockApiService.register(request) } throws httpException
+
+        viewModel.register(request.email, request.password, request.name)
+
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertEquals("Error en el servidor", state.errorMessage)
+            assertFalse(state.isSuccess)
+            assertFalse(state.isLoading)
+        }
+
+        coVerify(exactly = 0) { mockSessionManager.saveToken(any()) }
+        coVerify(exactly = 0) { mockUserPreferences.saveLoginState(true) }
+    }
+
+    @Test
+    fun `register con respuesta exitosa pero sin token debe manejar error`() = runTest {
+        val request = RegisterRequest("test@example.com", "password123", "Test User")
+        val response = RegisterResponse(
+            message = "Success",
+            user = RegisteredUser("1", "Test User", "test@example.com"),
+            token = null
+        )
+
+        coEvery { mockApiService.register(request) } returns Response.success(response)
+
+        viewModel.register(request.email, request.password, request.name)
+
+        viewModel.uiState.test {
+            val state = awaitItem()
+            assertTrue(state.isSuccess)
+            assertFalse(state.isLoading)
+        }
+
+        coVerify { mockSessionManager.saveToken("") }
+        coVerify { mockUserPreferences.saveUserEmail("test@example.com") }
+        coVerify { mockUserPreferences.saveLoginState(true) }
+    }
 }
