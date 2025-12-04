@@ -142,3 +142,7 @@ La app usa **Navigation Component** con un stack simple:
 * **Sin conexión:** Muestra un mensaje de “Sin internet”.
 * **Token inválido o expirado:** Redirige al login automáticamente.
 * **Permisos denegados (cámara/galería):** Se muestra un aviso sin forzar el cierre de la app.
+
+Firma APK 
+<img width="1001" height="709" alt="image" src="https://github.com/user-attachments/assets/973018b5-4caf-4776-882b-38fac532e390" />
+
