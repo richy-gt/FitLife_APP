@@ -28,7 +28,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 
-// Colores Sunset Dark
+
 private val DarkBackground = Color(0xFF121212)
 private val DarkSurface = Color(0xFF252525)
 private val AccentOrange = Color(0xFFFFAB91)
@@ -72,7 +72,7 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // TÍTULO ORIGINAL CON EMOJI
+
             Text(
                 text = "🏋️ FitLife",
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
@@ -87,7 +87,7 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
-            // EMAIL
+
             OutlinedTextField(
                 value = username,
                 onValueChange = {
@@ -121,7 +121,7 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // PASSWORD
+
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
@@ -157,9 +157,23 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                 )
             )
 
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = { navController.navigate("recover_password") }) {
+                    Text(
+                        text = "¿Olvidaste tu contraseña?",
+                        color = TextGray,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
-            // BOTÓN
+
             Button(
                 onClick = { if (emailError == null && username.isNotBlank() && password.isNotBlank()) viewModel.login(username, password) },
                 enabled = !uiState.isLoading && username.isNotBlank() && password.isNotBlank() && emailError == null,
@@ -176,7 +190,7 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                 else Text("Ingresar", fontWeight = FontWeight.Bold)
             }
 
-            // ERROR
+
             if (uiState.errorMessage != null) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Card(colors = CardDefaults.cardColors(containerColor = Color(0xFFEF9A9A))) {
@@ -186,7 +200,7 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // REGISTRO
+
             TextButton(
                 onClick = { navController.navigate("register") },
                 enabled = !uiState.isLoading

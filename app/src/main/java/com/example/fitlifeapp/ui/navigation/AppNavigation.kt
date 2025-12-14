@@ -18,7 +18,7 @@ import com.example.fitlifeapp.viewmodel.PlanEntrenamientoViewModel
 
 @Composable
 fun AppNavigation(navController: NavHostController) {
-    // 🔹 Creamos el ViewModel de PlanEntrenamiento compartido
+
     val planViewModel: PlanEntrenamientoViewModel = viewModel()
 
     NavHost(
@@ -32,11 +32,12 @@ fun AppNavigation(navController: NavHostController) {
 
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }
+        composable("recover_password") { RecoverPasswordScreen(navController) }
 
         composable("home") { HomeScreen(navController) }
         composable("entrenador") { EntrenadorScreen(navController) }
 
-        // 🔥 Pantalla lista de planes con ViewModel compartido
+
         composable("plan_entrenamiento") {
             PlanEntrenamientoScreen(
                 navController = navController,
@@ -46,7 +47,7 @@ fun AppNavigation(navController: NavHostController) {
 
         composable("plan_nutricional") { PlanNutricionalScreen(navController) }
 
-        // 🔥 Pantalla detalle del plan con ViewModel compartido y navController
+
         composable("detallePlan") {
             DetallePlanScreen(
                 navController = navController,
