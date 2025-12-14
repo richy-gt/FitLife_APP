@@ -1,93 +1,87 @@
 package com.example.fitlifeapp.ui.screens
 
+import androidx.compose.animation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.ui.Alignment
 import com.example.fitlifeapp.viewmodel.PlanEntrenamientoViewModel
+
+// --- Colores Sunset Dark ---
+private val DarkBg = Color(0xFF121212)
+private val DarkSurf = Color(0xFF252525)
+private val Orange = Color(0xFFFFAB91)
+private val TextW = Color(0xFFEEEEEE)
+private val TextG = Color(0xFFAAAAAA)
 
 @Composable
 fun DetallePlanScreen(
-    navController: NavHostController, // NavController para volver al menú
+    navController: NavHostController,
     viewModel: PlanEntrenamientoViewModel = viewModel()
 ) {
     val plan = viewModel.planSeleccionado.value
     var visible by remember { mutableStateOf(false) }
 
-    // Animación de aparición
     LaunchedEffect(plan) { visible = plan != null }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        verticalArrangement = Arrangement.Top,
+        modifier = Modifier.fillMaxSize().background(DarkBg).padding(20.dp),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         if (plan == null) {
-            Text(
-                text = "No se seleccionó ningún plan.",
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Text("No se seleccionó ningún plan.", color = TextG)
             return
         }
 
-        AnimatedVisibility(
-            visible = visible,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
+        AnimatedVisibility(visible = visible, enter = fadeIn(), exit = fadeOut()) {
             Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                elevation = CardDefaults.cardElevation(12.dp),
-                shape = MaterialTheme.shapes.medium,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = DarkSurf),
+                elevation = CardDefaults.cardElevation(8.dp),
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Column(modifier = Modifier.padding(20.dp)) {
+                Column(modifier = Modifier.padding(24.dp)) {
                     Text(
                         text = plan.name,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                        color = Orange
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(Modifier.height(12.dp))
                     Text(
                         text = plan.description,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = TextW
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(Modifier.height(16.dp))
                     Text(
                         text = "Duración: ${plan.duration}",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextG,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(Modifier.height(30.dp))
 
-        // Botón estilizado para volver al menú principal
         Button(
             onClick = { navController.navigate("home") },
-            modifier = Modifier.fillMaxWidth(0.8f),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            ),
-            shape = MaterialTheme.shapes.medium
+            modifier = Modifier.fillMaxWidth(0.9f).height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Orange, contentColor = Color.Black),
+            shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Volver al Menú Principal")
+            Text("Volver al Menú Principal", fontWeight = FontWeight.Bold)
         }
     }
 }

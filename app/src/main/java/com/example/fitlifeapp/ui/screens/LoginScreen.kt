@@ -2,29 +2,39 @@ package com.example.fitlifeapp.ui.screens
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.compose.ui.platform.LocalContext
 import com.example.fitlifeapp.data.local.UserPreferences
 import com.example.fitlifeapp.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
 
+// Colores Sunset Dark
+private val DarkBackground = Color(0xFF121212)
+private val DarkSurface = Color(0xFF252525)
+private val AccentOrange = Color(0xFFFFAB91)
+private val TextWhite = Color(0xFFEEEEEE)
+private val TextGray = Color(0xFFAAAAAA)
 
-fun validateEmailLogin(email: String): Boolean {
-    return Patterns.EMAIL_ADDRESS.matcher(email).matches()
-}
+fun validateEmailLogin(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
-    navController: NavHostController,
-    viewModel: LoginViewModel = viewModel()
-) {
+fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val userPrefs = remember { UserPreferences(context) }
@@ -34,147 +44,136 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
 
-
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
             scope.launch {
-
                 userPrefs.saveUserEmail(username)
                 userPrefs.saveUserPassword(password)
                 userPrefs.saveLoginState(true)
             }
-
-
-            navController.navigate("home") {
-                popUpTo("login") { inclusive = true }
-            }
+            navController.navigate("home") { popUpTo("login") { inclusive = true } }
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // ----------------------------
-        // TÍTULOS
-        // ----------------------------
-        Text(
-            text = "🏋️ FitLife",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        Text(
-            text = "Inicio de Sesión",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-
-        // ----------------------------
-        // CAMPO CORREO
-        // ----------------------------
-        OutlinedTextField(
-            value = username,
-            onValueChange = {
-                username = it
-                emailError = if (username.isNotEmpty() && !validateEmailLogin(username)) {
-                    "Ingrese un correo válido (ejemplo: usuario@gmail.com)"
-                } else null
-            },
-            label = { Text("Correo electrónico") },
-            enabled = !uiState.isLoading,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            isError = emailError != null
-        )
-
-        if (emailError != null) {
+    Scaffold(containerColor = DarkBackground) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // TÍTULO ORIGINAL CON EMOJI
             Text(
-                emailError!!,
-                color = MaterialTheme.colorScheme.error,
-                style = MaterialTheme.typography.labelSmall
+                text = "🏋️ FitLife",
+                style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                color = AccentOrange,
+                modifier = Modifier.padding(bottom = 8.dp)
             )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Inicio de Sesión",
+                style = MaterialTheme.typography.headlineMedium,
+                color = TextWhite,
+                modifier = Modifier.padding(bottom = 32.dp)
+            )
 
-        // ----------------------------
-        // CAMPO CONTRASEÑA
-        // ----------------------------
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Contraseña") },
-            visualTransformation = PasswordVisualTransformation(),
-            enabled = !uiState.isLoading,
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // ----------------------------
-        // BOTÓN INGRESAR
-        // ----------------------------
-        Button(
-            onClick = {
-                if (emailError == null && username.isNotBlank() && password.isNotBlank()) {
-                    viewModel.login(username, password)
-                }
-            },
-
-            enabled = !uiState.isLoading && username.isNotBlank() && password.isNotBlank() && emailError == null,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (uiState.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    color = MaterialTheme.colorScheme.onPrimary
+            // EMAIL
+            OutlinedTextField(
+                value = username,
+                onValueChange = {
+                    username = it
+                    emailError = if (it.isNotEmpty() && !validateEmailLogin(it)) "Correo inválido" else null
+                },
+                label = { Text("Correo electrónico") },
+                leadingIcon = { Icon(Icons.Default.Email, null, tint = AccentOrange) },
+                enabled = !uiState.isLoading,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                isError = emailError != null,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AccentOrange,
+                    unfocusedBorderColor = TextGray,
+                    focusedLabelColor = AccentOrange,
+                    unfocusedLabelColor = TextGray,
+                    cursorColor = AccentOrange,
+                    focusedContainerColor = DarkSurface,
+                    unfocusedContainerColor = DarkSurface,
+                    focusedTextColor = TextWhite,
+                    unfocusedTextColor = TextWhite,
+                    errorLabelColor = Color.Red,
+                    errorBorderColor = Color.Red
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+            )
+            if (emailError != null) {
+                Text(emailError!!, color = Color.Red, style = MaterialTheme.typography.labelSmall)
             }
-            Text(if (uiState.isLoading) "Iniciando..." else "Ingresar")
-        }
 
-        // ----------------------------
-        // MENSAJE DE ERROR
-        // ----------------------------
-        if (uiState.errorMessage != null) {
             Spacer(modifier = Modifier.height(16.dp))
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "❌ ${uiState.errorMessage}",
-                    color = MaterialTheme.colorScheme.onErrorContainer,
-                    modifier = Modifier.padding(12.dp),
-                    style = MaterialTheme.typography.bodyMedium
+
+            // PASSWORD
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Contraseña") },
+                leadingIcon = { Icon(Icons.Default.Lock, null, tint = AccentOrange) },
+                visualTransformation = PasswordVisualTransformation(),
+                enabled = !uiState.isLoading,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = AccentOrange,
+                    unfocusedBorderColor = TextGray,
+                    focusedLabelColor = AccentOrange,
+                    unfocusedLabelColor = TextGray,
+                    cursorColor = AccentOrange,
+                    focusedContainerColor = DarkSurface,
+                    unfocusedContainerColor = DarkSurface,
+                    focusedTextColor = TextWhite,
+                    unfocusedTextColor = TextWhite
                 )
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // BOTÓN
+            Button(
+                onClick = { if (emailError == null && username.isNotBlank() && password.isNotBlank()) viewModel.login(username, password) },
+                enabled = !uiState.isLoading && username.isNotBlank() && password.isNotBlank() && emailError == null,
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AccentOrange,
+                    contentColor = Color.Black,
+                    disabledContainerColor = DarkSurface,
+                    disabledContentColor = TextGray
+                )
+            ) {
+                if (uiState.isLoading) CircularProgressIndicator(modifier = Modifier.size(20.dp), color = Color.Black)
+                else Text("Ingresar", fontWeight = FontWeight.Bold)
+            }
+
+            // ERROR
+            if (uiState.errorMessage != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Card(colors = CardDefaults.cardColors(containerColor = Color(0xFFEF9A9A))) {
+                    Text("❌ ${uiState.errorMessage}", color = Color.Red, modifier = Modifier.padding(12.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // REGISTRO
+            TextButton(
+                onClick = { navController.navigate("register") },
+                enabled = !uiState.isLoading
+            ) {
+                Text("¿No tienes cuenta? Regístrate", color = AccentOrange)
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // ----------------------------
-        // LINK A REGISTRO
-        // ----------------------------
-        TextButton(
-            onClick = { navController.navigate("register") },
-            enabled = !uiState.isLoading
-        ) {
-            Text("¿No tienes cuenta? Regístrate")
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-
-
     }
 }
