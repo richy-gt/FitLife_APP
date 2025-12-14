@@ -180,6 +180,23 @@ fun HomeScreen(navController: NavHostController) {
                     onClick = { navController.navigate("productos") }
                 )
 
+                MenuListItem(
+                    text = "Cerrar Sesion",
+                    icon = Icons.Default.ExitToApp,
+
+                    onClick = {
+                        scope.launch {
+                            val sessionManager = SessionManager(context)
+                            sessionManager.logout()
+                            AvatarStorage.clear(context)
+                            navController.navigate("login") {
+                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    }
+                )
+
                 // Aquí eliminé el botón de "Cerrar sesión" y el divider que lo separaba.
                 Spacer(modifier = Modifier.height(32.dp))
             }

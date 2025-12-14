@@ -73,10 +73,15 @@ dependencies {
 
     // --- ViewModel Compose ---
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
+    implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.compose.animation.core.lint)
 
     // --- Navigation ---
     val nav_version = "2.7.7"
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    implementation(libs.androidx.compose.material.icons.extended)
+
 
     // ===== TESTING DEPENDENCIES =====
     testImplementation(libs.junit)

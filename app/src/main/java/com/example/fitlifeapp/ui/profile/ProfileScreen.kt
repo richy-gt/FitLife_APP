@@ -87,7 +87,7 @@ fun ProfileScreen(
                         modifier = Modifier.align(Alignment.Center).padding(24.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // CAMBIO AQUÍ: Icons.Default.Warning es más seguro que Error
+
                         Icon(Icons.Default.Warning, null, tint = ErrorRed, modifier = Modifier.size(48.dp))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text("Error al cargar", style = MaterialTheme.typography.titleLarge, color = ErrorRed)
@@ -115,7 +115,7 @@ fun ProfileScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // --- SECCIÓN AVATAR ---
+
                         val scale by animateFloatAsState(
                             targetValue = if (localAvatarUri != null) 1.05f else 1f,
                             animationSpec = tween(durationMillis = 600),

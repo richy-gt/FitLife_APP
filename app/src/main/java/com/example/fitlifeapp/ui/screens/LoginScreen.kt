@@ -8,6 +8,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,6 +24,9 @@ import androidx.navigation.NavHostController
 import com.example.fitlifeapp.data.local.UserPreferences
 import com.example.fitlifeapp.viewmodel.LoginViewModel
 import kotlinx.coroutines.launch
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 // Colores Sunset Dark
 private val DarkBackground = Color(0xFF121212)
@@ -43,6 +48,8 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordVisible by remember { mutableStateOf(false) }
+
 
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess) {
@@ -120,7 +127,19 @@ fun LoginScreen(navController: NavHostController, viewModel: LoginViewModel = vi
                 onValueChange = { password = it },
                 label = { Text("Contraseña") },
                 leadingIcon = { Icon(Icons.Default.Lock, null, tint = AccentOrange) },
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
+                    val image = if (passwordVisible) {
+                        Icons.Filled.Visibility
+                    } else
+                        Icons.Filled.VisibilityOff
+
+                    val description = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
+
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = description, tint = AccentOrange)
+                    }
+                },
                 enabled = !uiState.isLoading,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,

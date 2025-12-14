@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Search
@@ -189,7 +191,7 @@ fun ProductosScreen(navController: NavHostController) {
             // Lista de Productos
             LazyColumn(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp), // Más espacio entre cards
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
                 items(listaFinal) { producto ->
@@ -250,34 +252,35 @@ fun SortDropdown(
 fun ProductoItem(producto: Producto) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(24.dp), // Esquinas más redondeadas en la tarjeta
         colors = CardDefaults.cardColors(containerColor = DarkSurface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Imagen con fondo redondeado
             Surface(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(20.dp), // Esquinas más redondeadas en la imagen
                 color = Color.White,
-                modifier = Modifier.size(70.dp)
+                modifier = Modifier.size(80.dp)
             ) {
                 Image(
                     painter = painterResource(id = producto.photoResId),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(4.dp),
+                        .padding(8.dp),
                     contentScale = ContentScale.Fit
                 )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = producto.nombre,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -291,8 +294,22 @@ fun ProductoItem(producto: Producto) {
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = "$ ${producto.precio}",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
                     color = AccentAmber
+                )
+            }
+
+            // Botón de acción (Decorativo)
+            IconButton(
+                onClick = { /* Acción futura: Agregar al carrito */ },
+                modifier = Modifier
+                    .background(AccentOrangeSoft, CircleShape)
+                    .size(40.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Agregar",
+                    tint = DarkBackground
                 )
             }
         }
