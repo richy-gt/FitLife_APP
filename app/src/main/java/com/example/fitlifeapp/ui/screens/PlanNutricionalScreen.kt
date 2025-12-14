@@ -5,21 +5,35 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.fitlifeapp.data.model.FoodSuggestion
 import com.example.fitlifeapp.data.model.PlanNutricional
 import com.example.fitlifeapp.viewmodel.NutritionViewModel
 import com.example.fitlifeapp.viewmodel.NutritionViewModelFactory
+
+// --- Colores del Tema "Sunset Dark" ---
+private val DarkBackground = Color(0xFF121212)
+private val DarkSurface = Color(0xFF252525)
+private val AccentOrangeSoft = Color(0xFFFFAB91) // Naranja Coral
+private val AccentAmber = Color(0xFFFFE082)      // Ámbar
+private val TextWhite = Color(0xFFEEEEEE)
+private val TextGray = Color(0xFFAAAAAA)
+private val DarkText = Color(0xFF3E2723)         // Texto oscuro para contraste
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,11 +67,19 @@ fun PlanNutricionalScreen(
     val nutritionState by nutritionViewModel.uiState.collectAsState()
 
     Scaffold(
+        containerColor = DarkBackground,
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Plan Nutricional") },
+                title = {
+                    Text(
+                        "Nutrición Inteligente",
+                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                        color = TextWhite
+                    )
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = DarkBackground,
+                    titleContentColor = TextWhite
                 )
             )
         }
@@ -70,33 +92,42 @@ fun PlanNutricionalScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
+            // --- Tarjeta de Análisis (Dashboard Style) ---
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    containerColor = DarkSurface
                 ),
-                elevation = CardDefaults.cardElevation(6.dp)
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(0.dp) // Flat style moderno
             ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        "🥗 Analiza tu Comida",
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
+                Column(modifier = Modifier.padding(20.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Search, contentDescription = null, tint = AccentOrangeSoft)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            "Analiza tu Comida",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = TextWhite
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Selecciona un alimento para ver su información nutricional",
+                        "Toca un alimento para ver sus macros:",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f)
+                        color = TextGray
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // Grid de Alimentos
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                         foodSuggestions.chunked(2).forEach { rowItems ->
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 rowItems.forEach { food ->
                                     FoodChip(
@@ -116,6 +147,7 @@ fun PlanNutricionalScreen(
                         }
                     }
 
+                    // Loading
                     if (nutritionState.isLoading) {
                         Box(
                             modifier = Modifier
@@ -123,12 +155,13 @@ fun PlanNutricionalScreen(
                                 .padding(16.dp),
                             contentAlignment = Alignment.Center
                         ) {
-                            CircularProgressIndicator()
+                            CircularProgressIndicator(color = AccentOrangeSoft)
                         }
                     }
 
+                    // Resultado Nutricional
                     nutritionState.nutritionData?.let { data ->
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
                         NutritionInfoCard(data, selectedFood?.benefits ?: "")
                     }
 
@@ -143,12 +176,16 @@ fun PlanNutricionalScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
+
             Text(
-                "📋 Planes Disponibles",
+                "🥗 Planes Disponibles",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = TextWhite
             )
 
+            // Lista de Planes
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -158,10 +195,15 @@ fun PlanNutricionalScreen(
                 }
             }
 
-            Button(
+            // Botón Volver
+            OutlinedButton(
                 onClick = { navController.navigate("home") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, TextGray),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = TextWhite)
             ) {
+                Icon(Icons.Default.ArrowBack, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
                 Text("Volver al Menú Principal")
             }
         }
@@ -178,13 +220,12 @@ fun FoodChip(
     Card(
         onClick = onClick,
         modifier = modifier,
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected)
-                MaterialTheme.colorScheme.primary
-            else
-                MaterialTheme.colorScheme.surface
+            containerColor = if (isSelected) AccentOrangeSoft else DarkBackground
         ),
-        elevation = CardDefaults.cardElevation(if (isSelected) 8.dp else 2.dp)
+        // Borde sutil si no está seleccionado
+        border = if (!isSelected) androidx.compose.foundation.BorderStroke(1.dp, Color.DarkGray) else null
     ) {
         Column(
             modifier = Modifier.padding(12.dp),
@@ -192,17 +233,14 @@ fun FoodChip(
         ) {
             Text(
                 food.emoji,
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineSmall
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 food.name.split(" ").take(2).joinToString(" "),
-                style = MaterialTheme.typography.labelSmall,
-                color = if (isSelected)
-                    MaterialTheme.colorScheme.onPrimary
-                else
-                    MaterialTheme.colorScheme.onSurface,
-                maxLines = 2
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Medium),
+                color = if (isSelected) DarkText else TextWhite,
+                maxLines = 1
             )
         }
     }
@@ -212,16 +250,23 @@ fun FoodChip(
 fun NutritionInfoCard(data: com.example.fitlifeapp.viewmodel.NutritionData, benefits: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiaryContainer
-        )
+            containerColor = DarkBackground // Fondo más oscuro dentro de la tarjeta gris
+        ),
+        border = androidx.compose.foundation.BorderStroke(1.dp, AccentAmber.copy(alpha = 0.5f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                "📊 Información Nutricional",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Info, contentDescription = null, tint = AccentAmber, modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    "Información Nutricional",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = AccentAmber
+                )
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -232,13 +277,13 @@ fun NutritionInfoCard(data: com.example.fitlifeapp.viewmodel.NutritionData, bene
             NutrientRow("🌾 Fibra", "${String.format("%.1f", data.fiber)}g")
 
             if (benefits.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Divider()
+                Spacer(modifier = Modifier.height(12.dp))
+                Divider(color = Color.DarkGray)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     "💡 $benefits",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.8f)
+                    color = TextGray
                 )
             }
         }
@@ -255,12 +300,14 @@ fun NutrientRow(label: String, value: String) {
     ) {
         Text(
             label,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextWhite
         )
         Text(
             value,
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = AccentOrangeSoft // Destacar números en naranja
         )
     }
 }
@@ -269,26 +316,61 @@ fun NutrientRow(label: String, value: String) {
 fun PlanNutricionalCard(plan: PlanNutricional) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(4.dp)
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = plan.name,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = plan.description,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Calorías por día: ${plan.caloriesPerDay}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold
-            )
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Icono Circular (Estrella o Corazón para salud)
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(AccentAmber.copy(alpha = 0.15f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                // Icono Seguro: Favorite (Corazón) representa salud
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = null,
+                    tint = AccentAmber
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = plan.name,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = TextWhite
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = plan.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextGray,
+                    maxLines = 2
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Chip de calorías
+                Surface(
+                    color = Color.Black.copy(alpha = 0.3f),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(
+                        text = "⚡ ${plan.caloriesPerDay} kcal/día",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = AccentAmber,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+            }
         }
     }
 }
