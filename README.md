@@ -171,16 +171,17 @@ Firma APK
 
 ### Patricio Quilodran (11 commits en App, 7 en Backend)
 
-* Mejorado de UI
+* Cambio completo de UI
 * Agregado de caracteristicas
 * Arreglo errores en backend
 * Conectado de backend con frontend
+* Creación de Backend
 * Render
 
 ### Ricardo Saez (26 commits en app, 8 commits en Backend)
 
 * Creacion de app y UI basica
-* Arreglo errores de app y backend
+* Arreglo errores de app
 * Pulimiento de caracteristicas
 * Pruebas Unitarias
 * Agregado de caracteristicas QoL
