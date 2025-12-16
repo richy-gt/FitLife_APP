@@ -1,5 +1,9 @@
 # FitLife App (Android – Kotlin)
 
+## Integrantes:
+* **Ricardo Saez**
+* **Patricio Quilodran**
+
 ## 1. Caso elegido y alcance
 
 * **Caso:** FitLife (Aplicación móvil para gimnasio)
@@ -17,7 +21,8 @@ La app busca que los usuarios del gimnasio puedan registrarse, iniciar sesión y
 * **Backend:** Node.js + Express
 * **Base de datos:** MongoDB
 * **Otras dependencias:** JWT 
-
+<details>
+   <summary>Obsoleto, preservado por evidencia</summary>
 ### Instalación y ejecución del backend
 
 1. Clonar el repositorio y entrar en la carpeta del backend
@@ -40,6 +45,7 @@ La app busca que los usuarios del gimnasio puedan registrarse, iniciar sesión y
 
    La API queda disponible en:
    **[http://10.0.2.2:8080/api/](http://10.0.2.2:8080/api/)**
+</details>
 
 ### Requisitos para la app Android
 
@@ -146,3 +152,35 @@ La app usa **Navigation Component** con un stack simple:
 Firma APK 
 <img width="1001" height="709" alt="image" src="https://github.com/user-attachments/assets/973018b5-4caf-4776-882b-38fac532e390" />
 
+## 7. Codigo Fuente
+
+### Repositorio del Backend
+
+* https://github.com/richy-gt/Fitlife_BACK
+* Tecnologías: Node.js, Express, MongoDB
+* Puerto: 8080
+* Deploy: Render
+
+### Repositorio de la App
+
+* https://github.com/richy-gt/FitLife_APP
+* Tecnologías: Kotlin, Jetpack Compose
+* Plataforma: Android SDK 24+
+
+## 8. Evidencias de trabajo
+
+### Patricio Quilodran (11 commits en App, 7 en Backend)
+
+* Mejorado de UI
+* Agregado de caracteristicas
+* Arreglo errores en backend
+* Conectado de backend con frontend
+* Render
+
+### Ricardo Saez (26 commits en app, 8 commits en Backend)
+
+* Creacion de app y UI basica
+* Arreglo errores de app y backend
+* Pulimiento de caracteristicas
+* Pruebas Unitarias
+* Agregado de caracteristicas QoL
