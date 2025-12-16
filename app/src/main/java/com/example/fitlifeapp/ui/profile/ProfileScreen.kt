@@ -33,7 +33,7 @@ import com.example.fitlifeapp.R
 import com.example.fitlifeapp.data.local.SessionManager
 import kotlinx.coroutines.launch
 
-// --- Colores del Tema "Sunset Dark" ---
+// colores del tema "sunset dark"
 private val DarkBackground = Color(0xFF121212)
 private val DarkSurface = Color(0xFF252525)
 private val AccentOrange = Color(0xFFFFAB91)
@@ -144,7 +144,7 @@ fun ProfileScreen(
                             )
                         }
 
-                        // Botón Editar Foto
+                        // botón editar foto
                         Button(
                             onClick = { navController.navigate("camera_avatar") },
                             colors = ButtonDefaults.buttonColors(containerColor = DarkSurface, contentColor = AccentOrange),
@@ -164,14 +164,14 @@ fun ProfileScreen(
                             color = TextWhite
                         )
 
-                        // --- TARJETAS DE DATOS ---
+                        // tarjetas de datos
                         ProfileDataCard("Nombre completo", state.userName.ifEmpty { "No disponible" }, Icons.Default.Person)
                         ProfileDataCard("Correo electrónico", state.userEmail.ifEmpty { "No disponible" }, Icons.Default.Email)
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        // --- ACCIONES ---
-                        // Refrescar
+                        // acciones
+                        // refrescar
                         OutlinedButton(
                             onClick = { viewModel.loadCurrentUser() },
                             modifier = Modifier.fillMaxWidth().height(50.dp),
@@ -187,7 +187,7 @@ fun ProfileScreen(
                             }
                         }
 
-                        // Cerrar Sesión
+                        // cerrar sesión
                         Button(
                             onClick = {
                                 scope.launch {
@@ -211,6 +211,18 @@ fun ProfileScreen(
 
                         TextButton(onClick = { navController.navigate("home") }) {
                             Text("← Volver al inicio", color = TextGray)
+                        }
+
+                        OutlinedButton(
+                            onClick = { navController.navigate("role_selector") },
+                            modifier = Modifier.fillMaxWidth().height(50.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = TextWhite),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, AccentOrange)
+                        ) {
+                            Icon(Icons.Default.Person, null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Cambiar Rol (Demo)")
                         }
                     }
                 }

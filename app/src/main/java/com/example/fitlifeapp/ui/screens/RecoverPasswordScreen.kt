@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
-
+// colores del tema (igual que en loginscreen)
 private val DarkBackground = Color(0xFF121212)
 private val DarkSurface = Color(0xFF252525)
 private val AccentOrange = Color(0xFFFFAB91)
@@ -52,7 +52,7 @@ fun RecoverPasswordScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.Center
         ) {
             if (isSubmitted) {
-
+                // mensaje de éxito
                 Text(
                     text = "📧 Correo Enviado",
                     style = MaterialTheme.typography.headlineMedium,
@@ -75,7 +75,7 @@ fun RecoverPasswordScreen(navController: NavHostController) {
                     Text("Volver al Inicio de Sesión", fontWeight = FontWeight.Bold)
                 }
             } else {
-
+                // formulario de recuperación
                 Text(
                     text = "¿Olvidaste tu contraseña?",
                     style = MaterialTheme.typography.headlineSmall,
@@ -125,7 +125,7 @@ fun RecoverPasswordScreen(navController: NavHostController) {
                 Button(
                     onClick = {
                         if (email.isNotBlank() && emailError == null) {
-
+                            // simulación de envío
                             isSubmitted = true
                         }
                     },
